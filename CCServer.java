@@ -36,11 +36,36 @@ class CCServer {
 				System.out.println("received response header, data payload has length " + respDataLen);
 				byte[] bytes = new byte[respDataLen];
 				din.readFully(bytes);
+
+				// Initialize Graph
+				Graph g = new Graph();
+				System.out.println("Initialized graph.");
 				
-				// while (dataIn.available() > 0) {
-				// 	String input = dataIn.readUTF();
-				// 	System.out.println(input + " ");
-				// }
+				int i = 0;
+				while (i < bytes.length) {
+					final int ASCIISPACE = 32;
+					final int ASCIILINEFEED = 10;
+
+					int firstNode = 0;
+					while (bytes[i] != ASCIISPACE) {
+						char c = (char) bytes[i];
+						firstNode = firstNode * 10 + Character.getNumericValue(c);
+						i++;
+					}
+					i++;
+					System.out.println("First Node: " + firstNode);
+
+					int secondNode = 0;
+					while (bytes[i] != ASCIILINEFEED) {
+						char c = (char) bytes[i];
+						secondNode = secondNode * 10 + Character.getNumericValue(c);
+						i++;
+					}
+					i++;
+					System.out.println("Second Node: " + secondNode);
+
+					graph.construct(firstNode, secondNode);
+				}
 
 			} catch (Exception e) {
 				e.printStackTrace();
