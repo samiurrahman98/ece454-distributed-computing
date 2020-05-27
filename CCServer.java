@@ -35,7 +35,15 @@ class CCServer {
 		din.readFully(bytes);
 		
 		System.out.println("received " + bytes.length + " bytes of payload from client.");
-		System.out.println(new String(bytes, StandardCharsets.UTF_8));
+		
+		String input = new String(bytes, StandardCharsets.UTF_8);
+		String newLine = System.getProperty("line.separator");
+		String[] lines = input.split(newLine);
+		System.out.println("Input:");
+		for (String line: lines){
+			System.out.println(line);
+		}
+		// System.out.println(input);
 		
 		// while (dataIn.available() > 0) {
 		// 	String k = dataIn.readUTF();
