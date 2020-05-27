@@ -64,7 +64,8 @@ class CCServer {
 					i++;
 					System.out.println("Second Node: " + secondNode);
 
-					graph.construct(firstNode, secondNode);
+					g.construct(firstNode, secondNode);
+					System.out.println("Output: " + g.toString());
 				}
 
 			} catch (Exception e) {

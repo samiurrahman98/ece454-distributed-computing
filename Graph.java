@@ -1,8 +1,11 @@
-import java.util.*;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
+import guava.Multimap;
 
 class Graph {
     private HashMap<Integer, Set<Integer>> graphMap = null;
-    private mapLength = 0;
+    private int mapLength = 0;
 
     public Graph() {
         graphMap = new HashMap<Integer, Set<Integer>>();
@@ -13,6 +16,9 @@ class Graph {
         Boolean containsFirst = graphMap.containsValue(firstNode);
         Boolean containsSecond = graphMap.containsValue(secondNode);
 
+        System.out.println("Contains first node: " + containsFirst);
+        System.out.println("Contains second node: " + containsSecond);
+
         if (containsFirst && containsSecond)
             return;
 
@@ -21,7 +27,7 @@ class Graph {
             Set<Integer> nodeSet = new HashSet<Integer>() {{
                 add(firstNode);
                 add(secondNode);
-            }}
+            }};
             graphMap.put(mapLength, nodeSet);
             mapLength++;
             return;
@@ -54,7 +60,7 @@ class Graph {
         StringBuilder sb = new StringBuilder();
 
         for (int key: graphMap.keySet()) {
-            sb.append(graphMap[key].toString());
+            sb.append(graphMap.get(key).toString());
             sb.append("\n");
         }
         return sb.toString();
