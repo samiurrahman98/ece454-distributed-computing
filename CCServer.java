@@ -1,4 +1,6 @@
 import java.io.*;
+import java.nio.file.*;
+import java.nio.charset.*;
 import java.net.*;
 
 class CCServer {
@@ -24,12 +26,22 @@ class CCServer {
 		  - the payload is a string
 		    (UTF-8, big-endian)
 		*/
-		Socket csock = ssock.accept();
-		DataInputStream dataIn = new DataInputStream(csock.getInputStream());
-		while (dataIn.available() > 0) {
-			String k = dataIn.readUTF();
-			System.out.println(k+" ");
-		}
+		Socket clientSock = ssock.accept();
+		System.out.println("Connected to client");
+		DataInputStream din = new DataInputStream(clientSock.getInputStream());
+		int reqDataLen = din.readInt();
+		System.out.println("received response header, data payload has length " + reqDataLen);
+		byte[] bytes = new byte[reqDataLen];
+		din.readFully(bytes);
+		
+		System.out.println("received " + bytes.length + " bytes of payload from client.");
+		System.out.println(new String(bytes, StandardCharsets.UTF_8));
+		
+		// while (dataIn.available() > 0) {
+		// 	String k = dataIn.readUTF();
+		// 	System.out.println(k+" ");
+		// }
+
 	    } catch (Exception e) {
 		e.printStackTrace();
 	    }
