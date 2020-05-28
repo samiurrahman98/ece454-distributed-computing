@@ -73,12 +73,12 @@ class CCServer {
 				System.out.println(am.toString());
 
 				// Write graph result to the client
-				// DataOutputStream dout = new DataOutputStream(csock.getOutputStream());
-				// bytes = cg.toString().getBytes("UTF-8");
-				// dout.writeInt(bytes.length);
-				// dout.write(bytes);
-				// dout.flush();
-				// System.out.println("sent result header and " + bytes.length + " bytes of payload data to Client");
+				DataOutputStream dout = new DataOutputStream(csock.getOutputStream());
+				bytes = am.toString().getBytes("UTF-8");
+				dout.writeInt(bytes.length);
+				dout.write(bytes);
+				dout.flush();
+				System.out.println("sent result header and " + bytes.length + " bytes of payload data to Client");
 
 			} catch (Exception e) {
 				e.printStackTrace();
