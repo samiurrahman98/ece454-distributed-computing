@@ -38,8 +38,8 @@ class CCServer {
 				din.readFully(bytes);
 
 				// Initialize Graph
-				Graph g = new Graph();
-				System.out.println("Initialized graph.");
+				AdjacencyMatrix am = new AdjacencyMatrix();
+				System.out.println("Initialized adjacency matrix.");
 				
 				int i = 0;
 				while (i < bytes.length) {
@@ -53,7 +53,6 @@ class CCServer {
 						i++;
 					}
 					i++;
-					System.out.println("First Node: " + firstNode);
 
 					int secondNode = 0;
 					while (bytes[i] != ASCIILINEFEED) {
@@ -62,11 +61,22 @@ class CCServer {
 						i++;
 					}
 					i++;
-					System.out.println("Second Node: " + secondNode);
 
-					g.construct(firstNode, secondNode);
-					System.out.println("Output: " + g.toString());
+					am.addEdge(firstNode, secondNode);
 				}
+
+				am.findTriangles();
+
+				System.out.println("Output: ");
+				System.out.println(am.toString());
+
+				// Write graph result to the client
+				// DataOutputStream dout = new DataOutputStream(csock.getOutputStream());
+				// bytes = cg.toString().getBytes("UTF-8");
+				// dout.writeInt(bytes.length);
+				// dout.write(bytes);
+				// dout.flush();
+				// System.out.println("sent result header and " + bytes.length + " bytes of payload data to Client");
 
 			} catch (Exception e) {
 				e.printStackTrace();
