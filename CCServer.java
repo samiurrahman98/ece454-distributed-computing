@@ -40,7 +40,11 @@ class CCServer {
 				din.readFully(bytes);
 
 				// Initialize Graph
+<<<<<<< HEAD
 				DFS dfs = new DFS();
+=======
+				AdjacencyMatrix am = new AdjacencyMatrix();
+>>>>>>> parent of 8397066... Merge branch 'shashank' into sam
 				System.out.println("Initialized adjacency matrix.");
 				
 				int i = 0;
@@ -64,13 +68,21 @@ class CCServer {
 					}
 					i++;
 
+<<<<<<< HEAD
 					dfs.addEdge(firstNode, secondNode);
+=======
+					am.addEdge(firstNode, secondNode);
+>>>>>>> parent of 8397066... Merge branch 'shashank' into sam
 				}
 
 				dfs.findTriangles();
 
 				System.out.println("Output: ");
+<<<<<<< HEAD
 				System.out.println(dfs.toString());
+=======
+				System.out.println(am.toString());
+>>>>>>> parent of 8397066... Merge branch 'shashank' into sam
 
 				// Write graph result to the client
 				// DataOutputStredfs dout = new DataOutputStredfs(csock.getOutputStredfs());
