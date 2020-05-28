@@ -40,7 +40,9 @@ class AdjacencyMatrix {
     }
 
     public String toString() {
-        triangleMap.forEach((key, value) -> System.out.println(Joiner.on(" ").join(value)));
-        return "";
+        String output = "";
+        for (Set<Object> triangleSet: triangleMap.values())
+            output += Joiner.on(" ").join(triangleSet) + "\n";
+        return output;
     }
 }
