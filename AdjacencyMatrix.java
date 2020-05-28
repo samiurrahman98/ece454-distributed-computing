@@ -1,4 +1,5 @@
 import java.util.*;
+import com.google.common.base.Joiner;
 
 class AdjacencyMatrix {
     private Map<Integer, Set<Object>> matrix = null;
@@ -39,7 +40,7 @@ class AdjacencyMatrix {
     }
 
     public String toString() {
-        triangleMap.forEach((key, value) -> System.out.println(key + ":" + value));
+        triangleMap.forEach((key, value) -> System.out.println(Joiner.on(" ").join(value)));
         return "";
     }
 }
