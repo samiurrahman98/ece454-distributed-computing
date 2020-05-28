@@ -3,24 +3,28 @@ import java.util.*;
 class DFS {
     private Map<Integer, Set<Object>> matrix = null;
     private Map<Integer, Set<Object>> triangleMap = null;
-    private ArrayList<ArrayList<String>> edges = new ArrayList<ArrayList<String>>();
+    private ArrayList<ArrayList<Integer>> edges = new ArrayList<ArrayList<Integer>>();
 
     public DFS() {
         matrix = new HashMap<>();
     }
 
     public void addEdge(int firstNode, int secondNode) {
-        // if (!matrix.containsKey(firstNode)) 
-        //     matrix.put(firstNode, new HashSet<Object>());
-        // if (!matrix.containsKey(secondNode))
-        //     matrix.put(secondNode, new HashSet<Object>());
+        if (!matrix.containsKey(firstNode)) 
+            matrix.put(firstNode, new HashSet<Object>());
+        if (!matrix.containsKey(secondNode))
+            matrix.put(secondNode, new HashSet<Object>());
 
-        // matrix.get(firstNode).add(secondNode);
-        // matrix.get(secondNode).add(firstNode);
-        edges.get(Integer.toString(firstNode)).add(Integer.toString(secondNode));
+        matrix.get(firstNode).add(secondNode);
+        matrix.get(secondNode).add(firstNode);
+        
+        ArrayList<Integer> edge = new ArrayList<Integer>();
+        edge.add(firstNode);
+        edge.add(secondNode);
+        edges.add(edge);
     }
 
-    // public void findTriangles() {
+    public void findTriangles() {
     //     triangleMap = new HashMap<Integer, Set<Object>>();
     //     Set<Object> triangle = new HashSet<Object>();
 
@@ -38,13 +42,32 @@ class DFS {
     //         }
     //         triangleMap.put(i, triangle);
     //     }
-    // }
+        for(int i = 0; i < edges.size() - 1; i++) {
+            for (int j = i+1; j < edges.size(); j++) {
+                ArrayList<Integer> e1 = edges.get(i);
+                ArrayList<Integer> e2 = edges.get(j);
+                System.out.println(e1.get(0) + " " + e2.get(0));
+                if (e1.get(0) == e2.get(0)) {
+                    if (edges.contains(e1) && edges.contains(e2)) {
+                        System.out.println(e1.get(0) + " " + e1.get(1) + " " + e2.get(1));
+                    }
+                }
+                
+            }
+        }
+    }
 
     public String toString() {
         // triangleMap.forEach((key, value) -> System.out.println(key + ":" + value));
-        // return "";
-        for(ArrayList<String> element : edges) {
-            System.out.println(element[0] + " --> " + element[1]);
-        }
+        // forEach(ArrayList<Integer> element : edges) {
+        //     System.out.println(element[0] + " <--> " + element[1]);
+        // }
+        for (ArrayList<Integer> edge : edges) {
+            for (Integer n : edge) {
+                System.out.print(n + " "); 
+            }         
+            System.out.println();
+         } 
+        return "";
     }
 }

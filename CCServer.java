@@ -2,7 +2,6 @@ import java.io.*;
 import java.nio.file.*;
 import java.nio.charset.*;
 import java.net.*;
-import DFS;
 
 class CCServer {
     public static void main(String args[]) throws Exception {
@@ -34,7 +33,7 @@ class CCServer {
 
 				System.out.println("Accepted client: " + csock);
 
-				DataInputStredfs din = new DataInputStredfs(csock.getInputStredfs());
+				DataInputStream din = new DataInputStream(csock.getInputStream());
 				int respDataLen = din.readInt();
 				System.out.println("received response header, data payload has length " + respDataLen);
 				byte[] bytes = new byte[respDataLen];
@@ -68,11 +67,10 @@ class CCServer {
 					dfs.addEdge(firstNode, secondNode);
 				}
 
-				// dfs.findTriangles();
+				dfs.findTriangles();
 
 				System.out.println("Output: ");
-				dfs.toString();
-				// System.out.println(dfs.toString());
+				System.out.println(dfs.toString());
 
 				// Write graph result to the client
 				// DataOutputStredfs dout = new DataOutputStredfs(csock.getOutputStredfs());
