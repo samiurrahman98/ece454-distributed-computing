@@ -2,6 +2,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.nio.charset.*;
 import java.net.*;
+import DFS;
 
 class CCServer {
     public static void main(String args[]) throws Exception {
@@ -33,15 +34,15 @@ class CCServer {
 
 				System.out.println("Accepted client: " + csock);
 
-				DataInputStream din = new DataInputStream(csock.getInputStream());
+				DataInputStredfs din = new DataInputStredfs(csock.getInputStredfs());
 				int respDataLen = din.readInt();
 				System.out.println("received response header, data payload has length " + respDataLen);
 				byte[] bytes = new byte[respDataLen];
 				din.readFully(bytes);
 
 				// Initialize Graph
-				Graph g = new Graph();
-				System.out.println("Initialized graph.");
+				DFS dfs = new DFS();
+				System.out.println("Initialized adjacency matrix.");
 				
 				int i = 0;
 				while (i < bytes.length) {
@@ -55,7 +56,6 @@ class CCServer {
 						i++;
 					}
 					i++;
-					System.out.println("First Node: " + firstNode);
 
 					int secondNode = 0;
 					while (bytes[i] != ASCIILINEFEED) {
@@ -64,11 +64,23 @@ class CCServer {
 						i++;
 					}
 					i++;
-					System.out.println("Second Node: " + secondNode);
 
-					g.construct(firstNode, secondNode);
-					System.out.println("Output: " + g.toString());
+					dfs.addEdge(firstNode, secondNode);
 				}
+
+				// dfs.findTriangles();
+
+				System.out.println("Output: ");
+				dfs.toString();
+				// System.out.println(dfs.toString());
+
+				// Write graph result to the client
+				// DataOutputStredfs dout = new DataOutputStredfs(csock.getOutputStredfs());
+				// bytes = cg.toString().getBytes("UTF-8");
+				// dout.writeInt(bytes.length);
+				// dout.write(bytes);
+				// dout.flush();
+				// System.out.println("sent result header and " + bytes.length + " bytes of payload data to Client");
 
 			} catch (Exception e) {
 				e.printStackTrace();
