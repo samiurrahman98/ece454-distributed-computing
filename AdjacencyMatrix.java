@@ -3,7 +3,7 @@ import com.google.common.base.Joiner;
 
 class AdjacencyMatrix {
     private Map<Integer, Set<Object>> matrix = null;
-    private Map<Integer, Set<Object>> triangleMap = null;
+    private Map<Integer, String> triangleMap = null;
 
     public AdjacencyMatrix() {
         matrix = new HashMap<>();
@@ -20,7 +20,7 @@ class AdjacencyMatrix {
     }
 
     public void findTriangles() {
-        triangleMap = new HashMap<Integer, Set<Object>>();
+        triangleMap = new HashMap<Integer, String>();
         Set<Object> triangle = new HashSet<Object>();
 
         int i = 0;
@@ -35,14 +35,27 @@ class AdjacencyMatrix {
                     }
                 }
             }
-            triangleMap.put(i, triangle);
+            if (triangle.size() > 0) {
+                String triangleStr = Joiner.on(" ").join(triangle);
+                if (!triangleMap.containsValue(triangleStr)) {
+                    triangleMap.put(i, triangleStr);
+                    i++;
+                }
+                triangle.clear();
+            }
         }
     }
 
     public String toString() {
         String output = "";
-        for (Set<Object> triangleSet: triangleMap.values())
-            output += Joiner.on(" ").join(triangleSet) + "\n";
+        int size = triangleMap.size();
+        int i = 0;
+        for (String triangle: triangleMap.values()) {
+            output += triangle;
+            if (i != size - 1)
+                output += "\n";
+            i++;
+        } 
         return output;
     }
 }
