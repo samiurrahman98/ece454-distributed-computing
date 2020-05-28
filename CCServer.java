@@ -73,7 +73,7 @@ class CCServer {
 				System.out.println(dfs.toString());
 
 				// Write graph result to the client
-				// DataOutputStredfs dout = new DataOutputStredfs(csock.getOutputStredfs());
+				// DataOutputStream dout = new DataOutputStream(csock.getOutputStream());
 				// bytes = cg.toString().getBytes("UTF-8");
 				// dout.writeInt(bytes.length);
 				// dout.write(bytes);
