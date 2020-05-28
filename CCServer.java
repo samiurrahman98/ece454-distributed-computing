@@ -40,7 +40,11 @@ class CCServer {
 				din.readFully(bytes);
 
 				// Initialize Graph
+
 				AdjacencyMatrix am = new AdjacencyMatrix();
+=======
+// 				DFS dfs = new DFS();
+
 				System.out.println("Initialized adjacency matrix.");
 				
 				int i = 0;
@@ -64,6 +68,7 @@ class CCServer {
 					}
 					i++;
 
+
 					am.addEdge(firstNode, secondNode);
 				}
 
@@ -71,6 +76,15 @@ class CCServer {
 
 				System.out.println("Output: ");
 				System.out.println(am.toString());
+=======
+// 					dfs.addEdge(firstNode, secondNode);
+// 				}
+
+// 				dfs.findTriangles();
+
+// 				System.out.println("Output: ");
+// 				System.out.println(dfs.toString());
+
 
 				// Write graph result to the client
 				// DataOutputStream dout = new DataOutputStream(csock.getOutputStream());
