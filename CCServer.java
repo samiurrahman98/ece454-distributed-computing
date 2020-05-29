@@ -69,9 +69,6 @@ class CCServer {
 
 				mg.findTriangles();
 
-				System.out.println("Output: ");
-				System.out.println(mg.toString());
-
 				// Write graph result to the client
 				DataOutputStream dout = new DataOutputStream(csock.getOutputStream());
 				bytes = mg.toString().getBytes("UTF-8");

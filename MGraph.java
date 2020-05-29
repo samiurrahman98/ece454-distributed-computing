@@ -20,7 +20,7 @@ class MGraph {
 
     public void findTriangles() {
         triangleMap = new HashMap<Integer, String>();
-        Set<Integer> nodeSet = new HashSet<Integer>();
+        TreeSet<Integer> nodeSet = new TreeSet<Integer>();
 
         int i = 0;
         Iterator edgeItr = mGraph.edges().iterator();
