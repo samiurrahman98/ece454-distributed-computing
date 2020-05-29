@@ -27,24 +27,41 @@ class MGraph {
         while (edgeItr.hasNext()) {
             EndpointPair edge = (EndpointPair) edgeItr.next();
             Iterator nodeItr = mGraph.nodes().iterator();
-            while (nodeItr.hasNext()) {
-                int nodeU = (int) edge.nodeU();
-                int nodeV = (int) edge.nodeV();
-                int nodeW = (int) nodeItr.next();
-                if (nodeV != nodeW && nodeW != nodeU && mGraph.hasEdgeConnecting(nodeV, nodeW) && mGraph.hasEdgeConnecting(nodeW, nodeU)) {
-                    nodeSet.add(nodeU);
-                    nodeSet.add(nodeV);
-                    nodeSet.add(nodeW);
-                    String triangle = Joiner.on(" ").join(nodeSet);
-                    if (!triangleMap.containsValue(triangle)) {
-                        triangleMap.put(i, triangle);
-                        i++;
-                    }
-                    nodeSet.clear();
-                }
+
+            Runnable r = new MyRunnable(mGraph, triangleMap, edge, nodeItr);
+            Thread t = new Thread(r);
+            t.start();
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                System.out.println("Main thread interrupted!");
             }
+            // while (nodeItr.hasNext()) {
+            //     int nodeU = (int) edge.nodeU();
+            //     int nodeV = (int) edge.nodeV();
+            //     int nodeW = (int) nodeItr.next();
+            //     if (nodeV != nodeW && nodeW != nodeU && mGraph.hasEdgeConnecting(nodeV, nodeW) && mGraph.hasEdgeConnecting(nodeW, nodeU)) {
+            //         nodeSet.add(nodeU);
+            //         nodeSet.add(nodeV);
+            //         nodeSet.add(nodeW);
+            //         String triangle = Joiner.on(" ").join(nodeSet);
+            //         if (!triangleMap.containsValue(triangle)) {
+            //             triangleMap.put(i, triangle);
+            //             i++;
+            //         }
+            //         nodeSet.clear();
+            //     }
+            // }
         }
+
+        // Thread clockThread = new Thread(this, "Clock");
+        // clockThread.start();
     }
+
+    // public void run() {
+    //     Thread myThread = Thread.currentThread();
+    //     System.out.println("Thread Successfully run!");
+    // }
 
     public String toString() {
         String output = "";
