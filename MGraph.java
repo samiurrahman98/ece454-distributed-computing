@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.concurrent.*;
 import com.google.common.graph.MutableGraph;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.EndpointPair;
@@ -6,8 +7,8 @@ import com.google.common.base.Joiner;
 
 class MGraph {
     private MutableGraph<Integer> mGraph = null;
-    private Map<Integer, String> triangleMap = null;
-
+    private ConcurrentHashMap<Integer, String> triangleMap = null;
+    private ArrayList<Thread> threads = new ArrayList<Thread>();
     public MGraph() {
         mGraph = GraphBuilder.undirected().build();
     }
@@ -19,7 +20,7 @@ class MGraph {
     }
 
     public void findTriangles() {
-        triangleMap = new HashMap<Integer, String>();
+        triangleMap = new ConcurrentHashMap<Integer, String>();
         TreeSet<Integer> nodeSet = new TreeSet<Integer>();
 
         int i = 0;
@@ -31,11 +32,7 @@ class MGraph {
             Runnable r = new MyRunnable(mGraph, triangleMap, edge, nodeItr);
             Thread t = new Thread(r);
             t.start();
-            try {
-                t.join();
-            } catch (InterruptedException e) {
-                System.out.println("Main thread interrupted!");
-            }
+            threads.add(t);
             // while (nodeItr.hasNext()) {
             //     int nodeU = (int) edge.nodeU();
             //     int nodeV = (int) edge.nodeV();
@@ -52,6 +49,14 @@ class MGraph {
             //         nodeSet.clear();
             //     }
             // }
+        }
+
+        for(Thread t : threads) {
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                System.out.println("Main thread interrupted!");
+            }
         }
 
         // Thread clockThread = new Thread(this, "Clock");

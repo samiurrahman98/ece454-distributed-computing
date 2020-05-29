@@ -33,7 +33,7 @@ class CCServer {
 				// block until connection arrives
 				Socket csock = ssock.accept();
 
-				System.out.println("Accepted client: " + csock);
+				// System.out.println("Accepted client: " + csock);
 
 				DataInputStream din = new DataInputStream(csock.getInputStream());
 				int respDataLen = din.readInt();
@@ -43,7 +43,7 @@ class CCServer {
 
 				// Initialize Graph
 				MGraph mg = new MGraph();
-				System.out.println("Initialized mutable graph.");
+				// System.out.println("Initialized mutable graph.");
 				
 				int i = 0;
 				while (i < bytes.length) {
