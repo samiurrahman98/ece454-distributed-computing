@@ -7,7 +7,7 @@ import com.google.common.base.Joiner;
 
 class MGraph {
     private MutableGraph<Integer> mGraph = null;
-    private ConcurrentHashMap<Integer, String> triangleMap = null;
+    private HashMap<Integer, String> triangleMap = null;
     private ArrayList<Thread> threads = new ArrayList<Thread>();
     public MGraph() {
         mGraph = GraphBuilder.undirected().build();
@@ -20,7 +20,7 @@ class MGraph {
     }
 
     public void findTriangles() {
-        triangleMap = new ConcurrentHashMap<Integer, String>();
+        triangleMap = new HashMap<Integer, String>();
         TreeSet<Integer> nodeSet = new TreeSet<Integer>();
 
         int i = 0;
