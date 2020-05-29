@@ -40,10 +40,8 @@ class CCServer {
 				din.readFully(bytes);
 
 				// Initialize Graph
-
-				AdjacencyMatrix am = new AdjacencyMatrix();
-
-				System.out.println("Initialized adjacency matrix.");
+				MGraph mg = new MGraph();
+				System.out.println("Initialized mutable graph.");
 				
 				int i = 0;
 				while (i < bytes.length) {
@@ -66,21 +64,18 @@ class CCServer {
 					}
 					i++;
 
-					am.addEdge(firstNode, secondNode);
+					mg.add(firstNode, secondNode);
 				}
 
-				am.findTriangles();
-
-				System.out.println("Output: ");
-				System.out.println(am.toString());
+				mg.findTriangles();
 
 				// Write graph result to the client
-				// DataOutputStream dout = new DataOutputStream(csock.getOutputStream());
-				// bytes = cg.toString().getBytes("UTF-8");
-				// dout.writeInt(bytes.length);
-				// dout.write(bytes);
-				// dout.flush();
-				// System.out.println("sent result header and " + bytes.length + " bytes of payload data to Client");
+				DataOutputStream dout = new DataOutputStream(csock.getOutputStream());
+				bytes = mg.toString().getBytes("UTF-8");
+				dout.writeInt(bytes.length);
+				dout.write(bytes);
+				dout.flush();
+				System.out.println("sent result header and " + bytes.length + " bytes of payload data to Client");
 
 			} catch (Exception e) {
 				e.printStackTrace();
