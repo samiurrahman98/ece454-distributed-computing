@@ -31,7 +31,7 @@ class CCServer {
 				// block until connection arrives
 				Socket csock = ssock.accept();
 
-				System.out.println("Accepted client: " + csock);
+				// System.out.println("Accepted client: " + csock);
 
 				DataInputStream din = new DataInputStream(csock.getInputStream());
 				int respDataLen = din.readInt();
@@ -39,9 +39,7 @@ class CCServer {
 				byte[] bytes = new byte[respDataLen];
 				din.readFully(bytes);
 
-				// Initialize Graph
-				MGraph mg = new MGraph();
-				System.out.println("Initialized mutable graph.");
+				DFS dfs = new DFS();
 				
 				int i = 0;
 				while (i < bytes.length) {
@@ -64,18 +62,17 @@ class CCServer {
 					}
 					i++;
 
-					mg.add(firstNode, secondNode);
+					dfs.addEdge(firstNode, secondNode);
 				}
-
-				mg.findTriangles();
+				dfs.findTriangles();
 
 				// Write graph result to the client
 				DataOutputStream dout = new DataOutputStream(csock.getOutputStream());
-				bytes = mg.toString().getBytes("UTF-8");
+				bytes = dfs.toString().getBytes("UTF-8");
 				dout.writeInt(bytes.length);
 				dout.write(bytes);
 				dout.flush();
-				System.out.println("sent result header and " + bytes.length + " bytes of payload data to Client");
+				System.out.println("sent result header and " + bytes.length + " bytes of payload data to Client");		
 
 			} catch (Exception e) {
 				e.printStackTrace();
