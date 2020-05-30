@@ -9,6 +9,7 @@ class MGraph {
     private MutableGraph<Integer> mGraph = null;
     private HashMap<Integer, String> triangleMap = null;
     private ArrayList<Thread> threads = new ArrayList<Thread>();
+
     public MGraph() {
         mGraph = GraphBuilder.undirected().build();
     }
@@ -61,12 +62,26 @@ class MGraph {
 
         // Thread clockThread = new Thread(this, "Clock");
         // clockThread.start();
-    }
+//     }
 
-    // public void run() {
-    //     Thread myThread = Thread.currentThread();
-    //     System.out.println("Thread Successfully run!");
-    // }
+//             while (nodeItr.hasNext()) {
+//                 int nodeU = (int) edge.nodeU();
+//                 int nodeV = (int) edge.nodeV();
+//                 int nodeW = (int) nodeItr.next();
+//                 if (nodeV != nodeW && nodeW != nodeU && mGraph.hasEdgeConnecting(nodeV, nodeW) && mGraph.hasEdgeConnecting(nodeW, nodeU)) {
+//                     nodeSet.add(nodeU);
+//                     nodeSet.add(nodeV);
+//                     nodeSet.add(nodeW);
+//                     String triangle = Joiner.on(" ").join(nodeSet);
+//                     if (!triangleMap.containsValue(triangle)) {
+//                         triangleMap.put(i, triangle);
+//                         i++;
+//                     }
+//                     nodeSet.clear();
+//                 }
+//             }
+//         }
+    }
 
     public String toString() {
         String output = "";
