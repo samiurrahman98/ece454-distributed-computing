@@ -16,18 +16,6 @@ class CCServer {
 		System.out.println("listening on port " + port);
 		while(true) {
 			try {
-				/*
-				YOUR CODE GOES HERE
-				- accept connection from server socket
-				- read requests from connection repeatedly
-				- for each request, compute an output and send a response
-				- each message has a 4-byte header followed by a payload
-				- the header is the length of the payload
-					(signed, two's complement, big-endian)
-				- the payload is a string
-					(UTF-8, big-endian)
-				*/
-
 				// block until connection arrives
 				Socket csock = ssock.accept();
 
@@ -64,7 +52,7 @@ class CCServer {
 					}
 					i++;
 
-					mg.add(firstNode, secondNode);
+					mg.addEdge(firstNode, secondNode);
 				}
 
 				mg.findTriangles();
