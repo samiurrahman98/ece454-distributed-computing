@@ -8,6 +8,7 @@ import com.google.common.base.Joiner;
 class MGraph {
     private MutableGraph<Integer> mGraph = null;
     private List<String> triangles = null;
+    final private int MAXTHREADPOOLSIZE = 64;
 
     public MGraph() {
         mGraph = GraphBuilder.undirected().build();
@@ -19,7 +20,7 @@ class MGraph {
 
     public void findTriangles() {
         List<Future> futures = new ArrayList<Future>();
-        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(MAXTHREADPOOLSIZE);
 
         triangles = new ArrayList<String>();
 
