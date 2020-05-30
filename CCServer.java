@@ -16,18 +16,6 @@ class CCServer {
 		System.out.println("listening on port " + port);
 		while(true) {
 			try {
-				/*
-				YOUR CODE GOES HERE
-				- accept connection from server socket
-				- read requests from connection repeatedly
-				- for each request, compute an output and send a response
-				- each message has a 4-byte header followed by a payload
-				- the header is the length of the payload
-					(signed, two's complement, big-endian)
-				- the payload is a string
-					(UTF-8, big-endian)
-				*/
-
 				// block until connection arrives
 				Socket csock = ssock.accept();
 
@@ -39,7 +27,7 @@ class CCServer {
 				byte[] bytes = new byte[respDataLen];
 				din.readFully(bytes);
 
-				DFS dfs = new DFS();
+				MGraph mg = new MGraph();
 				
 				int i = 0;
 				while (i < bytes.length) {
@@ -62,13 +50,13 @@ class CCServer {
 					}
 					i++;
 
-					dfs.addEdge(firstNode, secondNode);
+					mg.addEdge(firstNode, secondNode);
 				}
-				dfs.findTriangles();
+				mg.findTriangles();
 
 				// Write graph result to the client
 				DataOutputStream dout = new DataOutputStream(csock.getOutputStream());
-				bytes = dfs.toString().getBytes("UTF-8");
+				bytes = mg.toString().getBytes("UTF-8");
 				dout.writeInt(bytes.length);
 				dout.write(bytes);
 				dout.flush();
