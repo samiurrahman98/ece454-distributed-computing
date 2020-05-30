@@ -2,8 +2,6 @@ import java.io.*;
 import java.nio.file.*;
 import java.nio.charset.*;
 import java.net.*;
-import java.lang.Thread;
-import java.lang.Runnable;
 
 class CCServer {
     public static void main(String args[]) throws Exception {
@@ -41,9 +39,7 @@ class CCServer {
 				byte[] bytes = new byte[respDataLen];
 				din.readFully(bytes);
 
-				// Initialize Graph
-				MGraph mg = new MGraph();
-				// System.out.println("Initialized mutable graph.");
+				DFS dfs = new DFS();
 				
 				int i = 0;
 				while (i < bytes.length) {
@@ -66,31 +62,17 @@ class CCServer {
 					}
 					i++;
 
-					mg.add(firstNode, secondNode);
+					dfs.addEdge(firstNode, secondNode);
 				}
-
-				mg.findTriangles();
+				dfs.findTriangles();
 
 				// Write graph result to the client
 				DataOutputStream dout = new DataOutputStream(csock.getOutputStream());
-				bytes = mg.toString().getBytes("UTF-8");
+				bytes = dfs.toString().getBytes("UTF-8");
 				dout.writeInt(bytes.length);
 				dout.write(bytes);
 				dout.flush();
-				System.out.println("sent result header and " + bytes.length + " bytes of payload data to Client");
-
-				// Runnable runnable = new Runnable() {
-				// 	@Override
-				// 	public void run() {
-				// 		System.out.println("Inside : " + Thread.currentThread().getName());
-				// 	}
-				// };
-
-				// System.out.println("Creating Thread...");
-				// Thread thread = new Thread(runnable);
-
-				// System.out.println("Starting Thread...");
-				// thread.start();				
+				System.out.println("sent result header and " + bytes.length + " bytes of payload data to Client");		
 
 			} catch (Exception e) {
 				e.printStackTrace();
