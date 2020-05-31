@@ -1,0 +1,35 @@
+from collections import defaultdict
+
+def triangles(targetEdge, allEdges):
+    nodes = defaultdict(list)
+    res = []
+    for edge in allEdges:
+        if edge == targetEdge:
+            if edge[0] in targetEdge and edge not in nodes[edge[1]]
+
+
+
+
+
+
+
+
+
+```
+from collections import defaultdict
+def triangles(targetEdge, allEdges):
+    nodes = defaultdict(list)
+    res = []
+    for edge in allEdges:
+        if edge == targetEdge:
+            continue
+        if edge[0] in targetEdge and edge not in nodes[edge[1]]:
+            nodes[edge[1]].append(edge)
+        elif edge[1] in targetEdge and edge not in nodes[edge[0]]:
+            nodes[edge[0]].append(edge)
+    for node in nodes:
+        if len(nodes[node]) == 2:
+            res.append(tuple(sorted([targetEdge[0], targetEdge[1], node])))
+    return res
+print(triangles((4, 5), [(1000, 2000), (3, 4), (3, 5), (4, 5)]))
+```

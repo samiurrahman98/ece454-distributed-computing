@@ -7,7 +7,7 @@ import com.google.common.base.Joiner;
 
 class MGraph {
     private MutableGraph<Integer> mGraph = null;
-    private List<String> triangles = null;
+    private Set<String> triangles = null;
     final private int MAXTHREADPOOLSIZE = 64;
 
     public MGraph() {
@@ -22,13 +22,15 @@ class MGraph {
         List<Future> futures = new ArrayList<Future>();
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(MAXTHREADPOOLSIZE);
 
-        triangles = new ArrayList<String>();
+        triangles = new HashSet<String>();
 
         for (Integer node: mGraph.nodes()) {
-            Set<Integer> adjacentNodes = mGraph.adjacentNodes(node);
-            futures.add(executor.submit(new Runnable() {
+            Set<Integer> adjacentNodes = mGraph.adjacentNodes(node);            
+            ArrayList<String> threadTriangles = new ArrayList<String>();
+            Runnable task = new Runnable() {
                 public void run() {
                     TreeSet<Integer> nodeSet = new TreeSet<Integer>();
+                    // ArrayList<String> threadTriangles = new ArrayList<String>();
                     for (Integer adjacentNode: adjacentNodes) {
                         Set<Integer> nextAdjacentNodes = mGraph.adjacentNodes(adjacentNode);
                         for (Integer nextAdjacentNode: nextAdjacentNodes) {
@@ -37,22 +39,24 @@ class MGraph {
                                 nodeSet.add(adjacentNode);
                                 nodeSet.add(nextAdjacentNode);
                                 String triangle = Joiner.on(" ").join(nodeSet);
-                                synchronized(triangles) { 
-                                    if (!triangles.contains(triangle))                                         
-                                        triangles.add(triangle);
-                                }
+                                // synchronized(triangles) { 
+                                    if (!threadTriangles.contains(triangle))                                         
+                                        threadTriangles.add(triangle);
+                                // }
                                 nodeSet.clear();
                             }
                         }
                     }
                 }
-            }));
+            };
+            futures.add(executor.submit(task, threadTriangles));
         }
 
         executor.shutdown();
         for(Future f: futures) {
             try {
-                f.get();
+                triangles.addAll((ArrayList<String>)f.get());
+                // System.out.println(f.get());
             } catch (InterruptedException | ExecutionException e) {
                 e.getCause().printStackTrace();
             }
