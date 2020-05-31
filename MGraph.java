@@ -7,7 +7,7 @@ import com.google.common.base.Joiner;
 
 class MGraph {
     private MutableGraph<Integer> mGraph = null;
-    private List<String> triangles = null;
+    private Set<String> triangles = null;
     final private int MAXTHREADPOOLSIZE = 64;
 
     public MGraph() {
@@ -22,31 +22,35 @@ class MGraph {
         List<Future> futures = new ArrayList<Future>();
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(MAXTHREADPOOLSIZE);
 
-        triangles = new ArrayList<String>();
+        triangles = new HashSet<String>();
 
         for (Integer node: mGraph.nodes()) {
-            Set<Integer> adjacentNodes = mGraph.adjacentNodes(node);
-            futures.add(executor.submit(new Runnable() {
-                public void run() {
-                    TreeSet<Integer> nodeSet = new TreeSet<Integer>();
-                    for (Integer adjacentNode: adjacentNodes) {
-                        Set<Integer> nextAdjacentNodes = mGraph.adjacentNodes(adjacentNode);
-                        for (Integer nextAdjacentNode: nextAdjacentNodes) {
-                            if (mGraph.adjacentNodes(nextAdjacentNode).contains(node)) {
-                                nodeSet.add(node);
-                                nodeSet.add(adjacentNode);
-                                nodeSet.add(nextAdjacentNode);
-                                String triangle = Joiner.on(" ").join(nodeSet);
-                                synchronized(triangles) { 
-                                    if (!triangles.contains(triangle))                                         
-                                        triangles.add(triangle);
+            if (mGraph.degree(node) >= 2) {
+                Set<Integer> adjacentNodes = mGraph.adjacentNodes(node);
+                futures.add(executor.submit(new Runnable() {
+                    public void run() {
+                        TreeSet<Integer> nodeSet = new TreeSet<Integer>();
+                        for (Integer adjacentNode: adjacentNodes) {
+                            if (mGraph.degree(adjacentNode) >= 2) {
+                                Set<Integer> nextAdjacentNodes = mGraph.adjacentNodes(adjacentNode);
+                                for (Integer nextAdjacentNode: nextAdjacentNodes) {
+                                    if (mGraph.degree(nextAdjacentNode) >= 2) {
+                                        if (mGraph.adjacentNodes(nextAdjacentNode).contains(node)) {
+                                            nodeSet.add(node);
+                                            nodeSet.add(adjacentNode);
+                                            nodeSet.add(nextAdjacentNode);
+                                            String triangle = Joiner.on(" ").join(nodeSet);
+                                            if (!triangles.contains(triangle))                                         
+                                                triangles.add(triangle);
+                                            nodeSet.clear();
+                                        }
+                                    }
                                 }
-                                nodeSet.clear();
                             }
                         }
                     }
-                }
-            }));
+                }, triangles));
+            }
         }
 
         executor.shutdown();

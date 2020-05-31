@@ -19,14 +19,12 @@ class CCServer {
 				// block until connection arrives
 				Socket csock = ssock.accept();
 
-				// System.out.println("Accepted client: " + csock);
-
 				DataInputStream din = new DataInputStream(csock.getInputStream());
 				int respDataLen = din.readInt();
-				System.out.println("received response header, data payload has length " + respDataLen);
 				byte[] bytes = new byte[respDataLen];
 				din.readFully(bytes);
 
+				// Initialize Graph
 				MGraph mg = new MGraph();
 				
 				int i = 0;
@@ -52,6 +50,7 @@ class CCServer {
 
 					mg.addEdge(firstNode, secondNode);
 				}
+
 				mg.findTriangles();
 
 				// Write graph result to the client
@@ -60,7 +59,6 @@ class CCServer {
 				dout.writeInt(bytes.length);
 				dout.write(bytes);
 				dout.flush();
-				System.out.println("sent result header and " + bytes.length + " bytes of payload data to Client");		
 
 			} catch (Exception e) {
 				e.printStackTrace();
