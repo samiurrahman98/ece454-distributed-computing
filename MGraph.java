@@ -39,9 +39,8 @@ class MGraph {
                                             nodeSet.add(node);
                                             nodeSet.add(adjacentNode);
                                             nodeSet.add(nextAdjacentNode);
-                                            String triangle = Joiner.on(" ").join(nodeSet);
-                                            if (!triangles.contains(triangle))                                         
-                                                triangles.add(triangle);
+                                            String triangle = Joiner.on(" ").join(nodeSet);                               
+                                            triangles.add(triangle);
                                             nodeSet.clear();
                                         }
                                     }
