@@ -4,7 +4,7 @@ export CLASSPATH=.:lib/*
 ./build.sh
 
 echo --- Running
-F=large
+F=small
 SAMPLE_INPUT=sample_input/$F.txt
 SAMPLE_OUTPUT=sample_output/$F.out
 SERVER_OUTPUT=myoutput.txt
