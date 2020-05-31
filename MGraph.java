@@ -24,33 +24,26 @@ class MGraph {
 
         triangles = new HashSet<String>();
 
-        for (Integer node: mGraph.nodes()) {
-            if (mGraph.degree(node) >= 2) {
-                Set<Integer> adjacentNodes = mGraph.adjacentNodes(node);
-                futures.add(executor.submit(new Runnable() {
-                    public void run() {
+        for (EndpointPair edge: mGraph.edges()) {
+            futures.add(executor.submit(new Runnable() {
+                public void run() {
+                    int nodeU = (int) edge.nodeU();
+                    int nodeV = (int) edge.nodeV();
+                    if (mGraph.degree(nodeU) >= 2 && mGraph.degree(nodeV) >= 2) {
+                        Set<Integer> intersection = new HashSet(mGraph.adjacentNodes(nodeU));
+                        intersection.retainAll(mGraph.adjacentNodes(nodeV));
                         TreeSet<Integer> nodeSet = new TreeSet<Integer>();
-                        for (Integer adjacentNode: adjacentNodes) {
-                            if (mGraph.degree(adjacentNode) >= 2) {
-                                Set<Integer> nextAdjacentNodes = mGraph.adjacentNodes(adjacentNode);
-                                for (Integer nextAdjacentNode: nextAdjacentNodes) {
-                                    if (mGraph.degree(nextAdjacentNode) >= 2) {
-                                        if (mGraph.adjacentNodes(nextAdjacentNode).contains(node)) {
-                                            nodeSet.add(node);
-                                            nodeSet.add(adjacentNode);
-                                            nodeSet.add(nextAdjacentNode);
-                                            String triangle = Joiner.on(" ").join(nodeSet);
-                                            if (!triangles.contains(triangle))                                         
-                                                triangles.add(triangle);
-                                            nodeSet.clear();
-                                        }
-                                    }
-                                }
-                            }
+                        for (Integer thirdNode: intersection) {
+                            nodeSet.add(nodeU);
+                            nodeSet.add(nodeV);
+                            nodeSet.add(thirdNode);
+                            String triangle = Joiner.on(" ").join(nodeSet);                                       
+                            triangles.add(triangle);
+                            nodeSet.clear();
                         }
                     }
-                }, triangles));
-            }
+                }
+            }, triangles));
         }
 
         executor.shutdown();
