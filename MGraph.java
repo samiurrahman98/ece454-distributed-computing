@@ -8,7 +8,7 @@ import com.google.common.base.Joiner;
 class MGraph {
     private MutableGraph<Integer> mGraph = null;
     private Set<String> triangles = null;
-    final private int MAXTHREADPOOLSIZE = 64;
+    final private int MAXTHREADPOOLSIZE = 2;
 
     public MGraph() {
         mGraph = GraphBuilder.undirected().build();
