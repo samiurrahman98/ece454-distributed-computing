@@ -10,10 +10,6 @@ class CCServer {
 			System.exit(-1);
 		}
 
-		final int ASCIIENDOFTEXT = 3;
-		final int ASCIIENDOFTRANSMISSION = 4;
-		final int ASCIILINEFEED = 10;
-		final int ASCIICARRIAGERETURN = 13;
 		final int ASCIISPACE = 32;
 		final int LOWERLIMIT = 48;
 		final int UPPERLIMIT = 57;
