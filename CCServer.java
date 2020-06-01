@@ -10,6 +10,14 @@ class CCServer {
 			System.exit(-1);
 		}
 
+		final int ASCIIENDOFTEXT = 3;
+		final int ASCIIENDOFTRANSMISSION = 4;
+		final int ASCIILINEFEED = 10;
+		final int ASCIICARRIAGERETURN = 13;
+		final int ASCIISPACE = 32;
+		final int LOWERLIMIT = 48;
+		final int UPPERLIMIT = 57;
+
 		int port = Integer.parseInt(args[0]);
 
 		ServerSocket ssock = new ServerSocket(port);
@@ -26,11 +34,21 @@ class CCServer {
 
 				// Initialize Graph
 				MGraph mg = new MGraph();
-				
+
 				int i = 0;
+				Boolean streamComplete = false;
 				while (i < bytes.length) {
-					final int ASCIISPACE = 32;
-					final int ASCIILINEFEED = 10;
+					
+					while (bytes[i] > UPPERLIMIT || bytes[i] < LOWERLIMIT) {
+						i++;
+						if (i >= bytes.length) {
+							streamComplete = true;
+							break;
+						}
+					}
+
+					if (streamComplete)
+						break;
 
 					int firstNode = 0;
 					while (bytes[i] != ASCIISPACE) {
@@ -40,8 +58,11 @@ class CCServer {
 					}
 					i++;
 
+					while (bytes[i] > UPPERLIMIT || bytes[i] < LOWERLIMIT)
+						i++;
+
 					int secondNode = 0;
-					while (bytes[i] != ASCIILINEFEED) {
+					while (bytes[i] <= UPPERLIMIT && bytes[i] >= LOWERLIMIT) {
 						char c = (char) bytes[i];
 						secondNode = secondNode * 10 + Character.getNumericValue(c);
 						i++;
