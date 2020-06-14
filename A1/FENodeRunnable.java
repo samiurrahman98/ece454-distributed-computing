@@ -4,16 +4,17 @@ import java.time.Duration;
 
 public class FENodeRunnable implements Runnable {
     private TTransport transport;
-    private BcryptService.Client FENodeClient;
+    // private BcryptService.Client FENodeClient;
     private final String hostname;
     private final String port;
 
     private static final int MAX_ATTEMPTS = 100;
     private static final Duration RETRY_WAIT_TIME = Duration.ofSeconds(3);
 
-    public FENodeRunnable (TTransport transport, BcryptService.Client client, String hostname, String port) {
+    // public FENodeRunnable (TTransport transport, BcryptService.Client client, String hostname, String port)
+    public FENodeRunnable (TTransport transport, String hostname, String port) {
         this.transport = transport;
-        this.FENodeClient = client;
+        // this.FENodeClient = client;
         this.port = port;
         this.hostname = hostname;
     }
@@ -51,8 +52,8 @@ public class FENodeRunnable implements Runnable {
                 numAttempts++;
                 try {
                     Thread.sleep(RETRY_WAIT_TIME.toMillis());
-                } catch (Exception e2) {
-                    System.out.println(e2.getMessage());
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
                 }
             } finally {
                 if (transport.isOpen()) transport.close();

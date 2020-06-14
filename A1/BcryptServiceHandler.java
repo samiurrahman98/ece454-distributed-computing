@@ -43,7 +43,7 @@ public class BcryptServiceHandler implements BcryptService.Iface {
                     for (int i = 0; i < numThreads; i++) {
                         int start = i * chunkSize;
                         int end = i == numThreads - 1 ? size : (i + 1) * chunkSize;
-                        service.execute(new MultiThreadHash(passwords, logRounds, res, start, end, latch));
+                        service.execute(new MultithreadHash(passwords, logRounds, res, start, end, latch));
                     }
                     latch.await();
                 } else
@@ -105,7 +105,7 @@ public class BcryptServiceHandler implements BcryptService.Iface {
                     for (int i = 0; i < numThreads; i++) {
                         int startInd = i * chunkSize;
                         int endInd = i == numThreads - 1 ? size : (i + 1) * chunkSize;
-                        service.execute(new MultiThreadCheck(passwords, hashes, res, startInd, endInd, latch));
+                        service.execute(new MultithreadCheck(passwords, hashes, res, startInd, endInd, latch));
                     }
                     latch.await();
                 } else {
@@ -155,7 +155,7 @@ public class BcryptServiceHandler implements BcryptService.Iface {
         }
     }
     
-    public void heartBeat(String hostname, String port) throws IllegalArgument, org.apache.thrift.TException {
+    public static void heartBeat(String hostname, String port) throws IllegalArgument, org.apache.thrift.TException {
 		try {
 			String nodeId = hostname + port;
 			if (!NodeManager.containsNode(nodeId)) {
