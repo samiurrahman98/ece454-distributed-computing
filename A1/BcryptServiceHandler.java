@@ -55,7 +55,7 @@ public class BcryptServiceHandler implements BcryptService.Iface {
                 throw new IllegalArgument(e.getMessage());
             }
         } else {
-            NodeProperties nodeProperties = NodeManager.getAvailablenodeProperties();
+            NodeProperties nodeProperties = NodeManager.getAvailableNodeProperties();
             while (nodeProperties != null) {
                 BcryptService.Client client = nodeProperties.getClient();
                 transport = nodeProperties.getTransport();
@@ -70,7 +70,7 @@ public class BcryptServiceHandler implements BcryptService.Iface {
                     System.out.println(e.getMessage());
                     NodeManager.removeNode(nodeProperties.nodeId);
                     System.out.println("BENode at " + nodeProperties.nodeId + " is dead :( Removing from NodeManager");
-                    nodeProperties = NodeManager.getAvailablenodeProperties();
+                    nodeProperties = NodeManager.getAvailableNodeProperties();
                 } finally {
                     if (transport != null && transport.isOpen()) transport.close();
                 }

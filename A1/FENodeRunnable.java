@@ -22,14 +22,14 @@ public class FENodeRunnable implements Runnable {
     public void run() {
         while (true) {
             try {
-                Thread.sleep(BatchTracker.TIMEOUT.toMillis());
+                Thread.sleep(Tracker.TIMEOUT.toMillis());
             } catch (Exception e) {
                 System.out.println("interrupted thread on FENodeRunnable");
                 System.out.println(e.getMessage());
                 e.printStackTrace();
             }
 
-            if (BatchTracker.isFENodeDown()) {
+            if (Tracker.isFENodeDown()) {
                 System.out.println("FENode is down!");
                 establishConnectionToFENode();
             }
@@ -51,8 +51,8 @@ public class FENodeRunnable implements Runnable {
                 numAttempts++;
                 try {
                     Thread.sleep(RETRY_WAIT_TIME.toMillis());
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
+                } catch (Exception e2) {
+                    System.out.println(e2.getMessage());
                 }
             } finally {
                 if (transport.isOpen()) transport.close();

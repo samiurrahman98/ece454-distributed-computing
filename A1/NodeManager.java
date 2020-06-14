@@ -45,77 +45,10 @@ public class NodeManager {
 
     public static void removeNode(String nodeId) {
        NodeProperties nodeProperties = nodeMap.remove(nodeId);
-       if (NodeProperties == null) System.out.println("Tried to remove " + nodeId + "from nodeMap but it did not exist");
+       if (nodeProperties == null) System.out.println("Tried to remove " + nodeId + "from nodeMap but it did not exist");
     }
 
     public static boolean containsNode(String nodeId) {
         return nodeMap.containsKey(nodeId);
-    }
-
-    /**
-    * A class representing a BENode info
-    */
-    class NodeProperties {
-        private BcryptService.Client BENodeClient;
-        private TTransport transport;
-        private final String hostname;
-        private final String port;
-        private double load;
-        private boolean occupied;
-        public String nodeId;
-
-        NodeProperties(String hostname, String port) {
-            TSocket sock = new TSocket(hostname, Integer.parseInt(port));
-            TTransport transport = new TFramedTransport(sock);
-            TProtocol protocol = new TBinaryProtocol(transport);
-            BcryptService.Client client = new BcryptService.Client(protocol);
-
-            this.BENodeClient = client;
-            this.transport = transport;
-            this.nodeId = hostname + port;
-            this.occupied = false;
-            this.hostname = hostname;
-            this.port = port;
-        }
-
-        public BcryptService.Client getClient() {
-            return BENodeClient;
-        }
-
-        public TTransport getTransport() {
-            return transport;
-        }
-
-        public void markOccupied() {
-            occupied = true;
-        }
-
-        public void markAvailable() {
-            occupied = false;
-        }
-
-        public boolean isNotOccupied() {
-            return !occupied;
-        }
-
-        public void addLoad(int numPasswords, short logRounds) {
-            load += numPasswords * Math.pow(2, logRounds);
-        }
-
-        public void reduceLoad(int numPasswords, short logRounds) {
-            load -= numPasswords * Math.pow(2, logRounds);
-        }
-
-        public double getLoad() {
-            return load;
-        }
-
-        public String getHostname() {
-            return hostname;
-        }
-
-        public String getPort() {
-            return port;
-        }
     }
 }
