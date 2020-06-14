@@ -171,4 +171,54 @@ public class BcryptServiceHandler implements BcryptService.Iface {
         for (int i = start; i < end; i++)
             res[i] = BCrypt.hashpw(passwords.get(i), BCrypt.gensalt(logRounds));
     }
+
+public class MultiThreadCheck implements Runnable {
+    private List<String> passwords;
+    private List<String> hashes;
+    private Boolean[] res;
+    int start;
+    int end;
+    CountDownLatch latch;
+
+    public MultiThreadCheck(List<String> passwords, List<String> hashes, Boolean[] res, int start, int end, CountDownLatch latch) {
+        this.passwords = passwords;
+        this.hashes = hashes;
+        this.res = res;
+        this.start = start;
+        this.end = end;
+        this.latch = latch;
+    }
+
+    @Override
+    public void run() {
+        checkPassword(passwords, hashes, res, start, end);
+        latch.countDown();
+    }
+}
+
+public class MultiThreadHash implements Runnable {
+    private List<String> passwords;
+    private short logRounds;
+    private String[] res;
+    private int start;
+    private int end;
+    private CountDownLatch latch;
+
+    public MultiThreadHash(List<String> passwords, short logRounds, String[] res, int start, int end, CountDownLatch latch) {
+        this.logRounds = logRounds;
+        this.passwords = passwords;
+        this.res = res;
+        this.start = start;
+        this.end = end;
+        this.latch = latch;
+    }
+
+    @Override
+    public void run() {
+        hashPassword(passwords, logRounds, res, start, end);
+        latch.countDown();
+    }
+}
+
+
 }
