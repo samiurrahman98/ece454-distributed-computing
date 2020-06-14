@@ -51,6 +51,4 @@ public class NodeManager {
     public static boolean containsNode(String nodeId) {
         return nodeMap.containsKey(nodeId);
     }
-
-    
 }
