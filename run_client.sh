@@ -15,7 +15,7 @@ echo -n "Enter the server's TCP port number: "
 read SERVER_PORT
 
 # java CCClient $SERVER_HOST $SERVER_PORT $SAMPLE_INPUT $SERVER_OUTPUT
-java CCClient "eceubuntu1" $SERVER_PORT $SAMPLE_INPUT $SERVER_OUTPUT
+java CCClient "eceubuntu4" $SERVER_PORT $SAMPLE_INPUT $SERVER_OUTPUT
 
 echo --- Comparing server\'s output against sample output
 sort -o $SERVER_OUTPUT $SERVER_OUTPUT
