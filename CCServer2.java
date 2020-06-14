@@ -2,21 +2,14 @@ import java.io.*;
 import java.nio.file.*;
 import java.nio.charset.*;
 import java.net.*;
+import com.google.common.graph.EndpointPair;
 
-class CCServer {
+class CCServer2 {
     public static void main(String args[]) throws Exception {
 		if (args.length != 1) {
 			System.out.println("usage: java CCServer port");
 			System.exit(-1);
 		}
-
-		final int ASCIIENDOFTEXT = 3;
-		final int ASCIIENDOFTRANSMISSION = 4;
-		final int ASCIILINEFEED = 10;
-		final int ASCIICARRIAGERETURN = 13;
-		final int ASCIISPACE = 32;
-		final int LOWERLIMIT = 48;
-		final int UPPERLIMIT = 57;
 
 		int port = Integer.parseInt(args[0]);
 
@@ -27,28 +20,20 @@ class CCServer {
 				// block until connection arrives
 				Socket csock = ssock.accept();
 
+				// System.out.println("Accepted client: " + csock);
+
 				DataInputStream din = new DataInputStream(csock.getInputStream());
 				int respDataLen = din.readInt();
+				System.out.println("received response header, data payload has length " + respDataLen);
 				byte[] bytes = new byte[respDataLen];
 				din.readFully(bytes);
 
-				// Initialize Graph
-				MGraph mg = new MGraph();
-
+				MGraph2 mg = new MGraph2();
+				
 				int i = 0;
-				Boolean streamComplete = false;
 				while (i < bytes.length) {
-					
-					while (bytes[i] > UPPERLIMIT || bytes[i] < LOWERLIMIT) {
-						i++;
-						if (i >= bytes.length) {
-							streamComplete = true;
-							break;
-						}
-					}
-
-					if (streamComplete)
-						break;
+					final int ASCIISPACE = 32;
+					final int ASCIILINEFEED = 10;
 
 					int firstNode = 0;
 					while (bytes[i] != ASCIISPACE) {
@@ -58,11 +43,8 @@ class CCServer {
 					}
 					i++;
 
-					while (bytes[i] > UPPERLIMIT || bytes[i] < LOWERLIMIT)
-						i++;
-
 					int secondNode = 0;
-					while (bytes[i] <= UPPERLIMIT && bytes[i] >= LOWERLIMIT) {
+					while (bytes[i] != ASCIILINEFEED) {
 						char c = (char) bytes[i];
 						secondNode = secondNode * 10 + Character.getNumericValue(c);
 						i++;
@@ -71,8 +53,11 @@ class CCServer {
 
 					mg.addEdge(firstNode, secondNode);
 				}
-
-				mg.findTriangles();
+				
+				for(EndpointPair<Integer> edge: mg.mGraph.edges()) {
+					mg.findTriangles(edge);
+				}
+				// mg.findTriangles();
 
 				// Write graph result to the client
 				DataOutputStream dout = new DataOutputStream(csock.getOutputStream());
@@ -80,6 +65,7 @@ class CCServer {
 				dout.writeInt(bytes.length);
 				dout.write(bytes);
 				dout.flush();
+				System.out.println("sent result header and " + bytes.length + " bytes of payload data to Client");		
 
 			} catch (Exception e) {
 				e.printStackTrace();

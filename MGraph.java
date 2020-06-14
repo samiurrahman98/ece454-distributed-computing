@@ -42,6 +42,12 @@ class MGraph {
                             nodeSet.clear();
                         }
                     }
+                    Iterator itr = incidentEdges.entrySet().iterator();
+                    while(itr.hasNext()) {
+                        Map.Entry pair = (Map.Entry)itr.next();
+                        System.out.println(pair.getKey() + " = " + pair.getValue());
+                    }
+                    // System.out.println("done edge!");
                 }
             }, triangles));
         }
