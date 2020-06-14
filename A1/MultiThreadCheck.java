@@ -1,3 +1,6 @@
+import java.util.*;
+import java.util.concurrent.*;
+
 public class MultiThreadCheck implements Runnable {
     private List<String> passwords;
     private List<String> hashes;

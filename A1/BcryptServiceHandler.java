@@ -13,7 +13,7 @@ import org.apache.thrift.transport.TFramedTransport;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-import javax.xml.soap.Node;
+// import javax.xml.soap.Node;
 
 public class BcryptServiceHandler implements BcryptService.Iface {
 
@@ -78,7 +78,7 @@ public class BcryptServiceHandler implements BcryptService.Iface {
 
             System.out.println("All BENodes are dead");
             try {
-                hashPasswordImpl(passwords, logRounds, res, 0, passwords.size());
+                hashPassword(passwords, logRounds, res, 0, passwords.size());
                 return Arrays.asList(res);
             } catch (Exception ex) {
                 throw new IllegalArgument(ex.getMessage());
@@ -109,7 +109,7 @@ public class BcryptServiceHandler implements BcryptService.Iface {
                     }
                     latch.await();
                 } else {
-                    checkPasswordImpl(passwords, hashes, res, 0, passwords.size());
+                    checkPassword(passwords, hashes, res, 0, passwords.size());
                 }
                 return Arrays.asList(res);
             } catch (Exception e) {

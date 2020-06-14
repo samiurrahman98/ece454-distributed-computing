@@ -42,7 +42,7 @@ public class FENodeRunnable implements Runnable {
         while (numAttempts < MAX_ATTEMPTS) {
             try {
                 transport.open();
-                FENodeClient.heartBeat(_hostname, _port);
+                FENodeClient.heartBeat(hostname, port);
                 transport.close();
 
                 System.out.println("Successfully found FENode");
