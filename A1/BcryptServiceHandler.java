@@ -13,8 +13,6 @@ import org.apache.thrift.transport.TFramedTransport;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-import javax.xml.soap.Node;
-
 public class BcryptServiceHandler implements BcryptService.Iface {
 
     private boolean isBENode;
@@ -43,7 +41,7 @@ public class BcryptServiceHandler implements BcryptService.Iface {
                     for (int i = 0; i < numThreads; i++) {
                         int start = i * chunkSize;
                         int end = i == numThreads - 1 ? size : (i + 1) * chunkSize;
-                        service.execute(new MultiThreadHash(passwords, logRounds, res, start, end, latch));
+                        service.execute(new MultithreadHash(passwords, logRounds, res, start, end, latch));
                     }
                     latch.await();
                 } else
@@ -55,7 +53,7 @@ public class BcryptServiceHandler implements BcryptService.Iface {
                 throw new IllegalArgument(e.getMessage());
             }
         } else {
-            NodeProperties nodeProperties = NodeManager.getAvailablenodeProperties();
+            NodeProperties nodeProperties = NodeManager.getAvailableNodeProperties();
             while (nodeProperties != null) {
                 BcryptService.Client client = nodeProperties.getClient();
                 transport = nodeProperties.getTransport();
@@ -70,7 +68,7 @@ public class BcryptServiceHandler implements BcryptService.Iface {
                     System.out.println(e.getMessage());
                     NodeManager.removeNode(nodeProperties.nodeId);
                     System.out.println("BENode at " + nodeProperties.nodeId + " is dead :( Removing from NodeManager");
-                    nodeProperties = NodeManager.getAvailablenodeProperties();
+                    nodeProperties = NodeManager.getAvailableNodeProperties();
                 } finally {
                     if (transport != null && transport.isOpen()) transport.close();
                 }
@@ -78,7 +76,7 @@ public class BcryptServiceHandler implements BcryptService.Iface {
 
             System.out.println("All BENodes are dead");
             try {
-                hashPasswordImpl(passwords, logRounds, res, 0, passwords.size());
+                hashPassword(passwords, logRounds, res, 0, passwords.size());
                 return Arrays.asList(res);
             } catch (Exception ex) {
                 throw new IllegalArgument(ex.getMessage());
@@ -105,11 +103,11 @@ public class BcryptServiceHandler implements BcryptService.Iface {
                     for (int i = 0; i < numThreads; i++) {
                         int startInd = i * chunkSize;
                         int endInd = i == numThreads - 1 ? size : (i + 1) * chunkSize;
-                        service.execute(new MultiThreadCheck(passwords, hashes, res, startInd, endInd, latch));
+                        service.execute(new MultithreadCheck(passwords, hashes, res, startInd, endInd, latch));
                     }
                     latch.await();
                 } else {
-                    checkPasswordImpl(passwords, hashes, res, 0, passwords.size());
+                    checkPassword(passwords, hashes, res, 0, passwords.size());
                 }
                 return Arrays.asList(res);
             } catch (Exception e) {
@@ -155,7 +153,7 @@ public class BcryptServiceHandler implements BcryptService.Iface {
         }
     }
     
-    public void heartBeat(String hostname, String port) throws IllegalArgument, org.apache.thrift.TException {
+    public static void heartBeat(String hostname, String port) throws IllegalArgument, org.apache.thrift.TException {
 		try {
 			String nodeId = hostname + port;
 			if (!NodeManager.containsNode(nodeId)) {
@@ -170,5 +168,54 @@ public class BcryptServiceHandler implements BcryptService.Iface {
     private void hashPassword(List<String> passwords, short logRounds, String[] res, int start, int end ) {
         for (int i = start; i < end; i++)
             res[i] = BCrypt.hashpw(passwords.get(i), BCrypt.gensalt(logRounds));
+    }
+
+    class MultithreadHash implements Runnable {
+        private List<String> passwords;
+        private short logRounds;
+        private String[] res;
+        private int start;
+        private int end;
+        private CountDownLatch latch;
+
+        public MultithreadHash(List<String> passwords, short logRounds, String[] res, int start, int end, CountDownLatch latch) {
+            this.logRounds = logRounds;
+            this.passwords = passwords;
+            this.res = res;
+            this.start = start;
+            this.end = end;
+            this.latch = latch;
+        }
+
+        @Override
+        public void run() {
+            hashPassword(passwords, logRounds, res, start, end);
+            latch.countDown();
+        }
+    }
+
+    class MultithreadCheck implements Runnable {
+        private List<String> passwords;
+        private List<String> hashes;
+        private Boolean[] res;
+        int start;
+        int end;
+        CountDownLatch latch;
+
+        public MultithreadCheck(List<String> passwords, List<String> hashes, Boolean[] res, int start, int end, CountDownLatch latch) {
+            this.passwords = passwords;
+            this.hashes = hashes;
+            this.res = res;
+            this.start = start;
+            this.end = end;
+            this.latch = latch;
+        }
+
+        @Override
+        public void run() {
+            checkPassword(passwords, hashes, res, start, end);
+            latch.countDown();
+        }
+
     }
 }

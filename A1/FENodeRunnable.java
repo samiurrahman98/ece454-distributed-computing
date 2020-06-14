@@ -4,16 +4,17 @@ import java.time.Duration;
 
 public class FENodeRunnable implements Runnable {
     private TTransport transport;
-    private BcryptService.Client FENodeClient;
+    // private BcryptService.Client FENodeClient;
     private final String hostname;
     private final String port;
 
     private static final int MAX_ATTEMPTS = 100;
     private static final Duration RETRY_WAIT_TIME = Duration.ofSeconds(3);
 
-    public FENodeRunnable (TTransport transport, BcryptService.Client client, String hostname, String port) {
+    // public FENodeRunnable (TTransport transport, BcryptService.Client client, String hostname, String port)
+    public FENodeRunnable (TTransport transport, String hostname, String port) {
         this.transport = transport;
-        this.FENodeClient = client;
+        // this.FENodeClient = client;
         this.port = port;
         this.hostname = hostname;
     }
@@ -22,14 +23,14 @@ public class FENodeRunnable implements Runnable {
     public void run() {
         while (true) {
             try {
-                Thread.sleep(BatchTracker.TIMEOUT.toMillis());
+                Thread.sleep(Tracker.TIMEOUT.toMillis());
             } catch (Exception e) {
                 System.out.println("interrupted thread on FENodeRunnable");
                 System.out.println(e.getMessage());
                 e.printStackTrace();
             }
 
-            if (BatchTracker.isFENodeDown()) {
+            if (Tracker.isFENodeDown()) {
                 System.out.println("FENode is down!");
                 establishConnectionToFENode();
             }
@@ -42,7 +43,8 @@ public class FENodeRunnable implements Runnable {
         while (numAttempts < MAX_ATTEMPTS) {
             try {
                 transport.open();
-                FENodeClient.heartBeat(_hostname, _port);
+                // FENodeClient.heartBeat(hostname, port);
+                BcryptServiceHandler.heartBeat(hostname, port);
                 transport.close();
 
                 System.out.println("Successfully found FENode");
@@ -51,8 +53,8 @@ public class FENodeRunnable implements Runnable {
                 numAttempts++;
                 try {
                     Thread.sleep(RETRY_WAIT_TIME.toMillis());
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
                 }
             } finally {
                 if (transport.isOpen()) transport.close();
