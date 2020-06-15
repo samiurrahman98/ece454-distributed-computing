@@ -11,6 +11,7 @@ public class NodeManager {
     private static ConcurrentHashMap<String, NodeProperties> nodeMap = new ConcurrentHashMap<String, NodeProperties>();
 
     public static synchronized NodeProperties getAvailableNodeProperties() {
+        System.out.println("nodeMap: " + nodeMap.toString());
         if (nodeMap.size() == 0) return null;
 
         for (NodeProperties node: nodeMap.values()) {
@@ -40,6 +41,10 @@ public class NodeManager {
 
     public static void addNode(String nodeId, NodeProperties nodeProperties) {
         nodeMap.put(nodeId, nodeProperties);
+        System.out.println("nodeId: " + nodeId);
+        System.out.println("hostname: " + nodeProperties.getHostname());
+        System.out.println("port: " + nodeProperties.getPort());
+        System.out.println("is not occupied? " + nodeProperties.isNotOccupied());
         System.out.println("number of available nodes: " + nodeMap.size());
     }
 

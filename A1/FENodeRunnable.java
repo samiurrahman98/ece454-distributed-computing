@@ -4,17 +4,16 @@ import java.time.Duration;
 
 public class FENodeRunnable implements Runnable {
     private TTransport transport;
-    // private BcryptService.Client FENodeClient;
+    private BcryptService.Client FENodeClient;
     private final String hostname;
     private final String port;
 
     private static final int MAX_ATTEMPTS = 100;
     private static final Duration RETRY_WAIT_TIME = Duration.ofSeconds(3);
 
-    // public FENodeRunnable (TTransport transport, BcryptService.Client client, String hostname, String port)
-    public FENodeRunnable (TTransport transport, String hostname, String port) {
+    public FENodeRunnable (TTransport transport, BcryptService.Client client, String hostname, String port) {
         this.transport = transport;
-        // this.FENodeClient = client;
+        this.FENodeClient = client;
         this.port = port;
         this.hostname = hostname;
     }
@@ -40,10 +39,11 @@ public class FENodeRunnable implements Runnable {
     public void establishConnectionToFENode() {
         int numAttempts = 0;
 
+        System.out.println("Attempting to establish connection to FE Node.");
         while (numAttempts < MAX_ATTEMPTS) {
             try {
                 transport.open();
-                BcryptServiceHandler.heartBeat(hostname, port);
+                FENodeClient.heartBeat(hostname, port);
                 transport.close();
 
                 System.out.println("Successfully found FENode");
