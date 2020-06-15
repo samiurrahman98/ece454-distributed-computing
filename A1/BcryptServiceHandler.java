@@ -12,13 +12,10 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.transport.TFramedTransport;
 
 import org.mindrot.jbcrypt.BCrypt;
-
-// import javax.xml.soap.Node;
-
 public class BcryptServiceHandler implements BcryptService.Iface {
 
     private boolean isBENode;
-    private final ExecutorService service = Executors.newFixedThreadPool(4);
+    private final ExecutorService service = Executors.newFixedThreadPool(2);
 
     public BcryptServiceHandler(boolean isBENode){
         this.isBENode = isBENode;

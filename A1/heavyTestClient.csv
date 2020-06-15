@@ -1,0 +1,21 @@
+Hash+Check password results for 128, 1024 character passwords (1 FENode, 1 BENode)
+LogRounds, Hash-Tput, Hash-Latency
+8,44.849335,22
+LogRounds, Check-Tput, Check-Latency
+8,48.1203,20
+LogRounds, Hash-Tput, Hash-Latency
+9,15.61928,64
+LogRounds, Check-Tput, Check-Latency
+9,28.526855,35
+LogRounds, Hash-Tput, Hash-Latency
+10,8.832459,113
+LogRounds, Check-Tput, Check-Latency
+10,12.5848,79
+LogRounds, Hash-Tput, Hash-Latency
+11,4.171691,239
+LogRounds, Check-Tput, Check-Latency
+11,5.8669844,170
+LogRounds, Hash-Tput, Hash-Latency
+12,2.0053267,498
+LogRounds, Check-Tput, Check-Latency
+12,3.0337505,329
