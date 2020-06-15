@@ -47,7 +47,7 @@ $JAVA_CC *.java -cp .:gen-java/:"lib/*":"jBCrypt-0.4/*"
 
 echo --- Done, now run your code.
 echo     Examples:
-echo $JAVA '-cp .:gen-java/:"lib/*":"jBCrypt-0.4/*" FENode 10123'
-echo $JAVA '-cp .:gen-java/:"lib/*":"jBCrypt-0.4/*" BENode localhost 10123 10124'
-echo $JAVA '-cp .:gen-java/:"lib/*":"jBCrypt-0.4/*" Client localhost 10123 hello'
+echo $JAVA '-cp .:gen-java/:"lib/*":"jBCrypt-0.4/*" FENode 10512'
+echo $JAVA '-cp .:gen-java/:"lib/*":"jBCrypt-0.4/*" BENode localhost 10512 10513'
+echo $JAVA '-cp .:gen-java/:"lib/*":"jBCrypt-0.4/*" Client localhost 10512 hello'
 
