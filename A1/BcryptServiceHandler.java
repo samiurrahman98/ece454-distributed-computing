@@ -30,6 +30,7 @@ public class BcryptServiceHandler implements BcryptService.Iface {
         String[] res = new String[passwords.size()];
 
         if (isBENode) {
+            System.out.println("BE Node: attempting to hash password");
             Tracker.receivedBatch();
             try {
                 int size = passwords.size();
@@ -52,8 +53,11 @@ public class BcryptServiceHandler implements BcryptService.Iface {
                 throw new IllegalArgument(e.getMessage());
             }
         } else {
+            System.out.println("FE Node: attempting to offload hash password operation to the BE Node.");
             NodeProperties nodeProperties = NodeManager.getAvailableNodeProperties();
+            System.out.println("node properties: " + nodeProperties);
             while (nodeProperties != null) {
+                System.out.println("Node Properties is not null!");
                 BcryptService.Client client = nodeProperties.getClient();
                 transport = nodeProperties.getTransport();
                 try {
@@ -62,6 +66,7 @@ public class BcryptServiceHandler implements BcryptService.Iface {
                     List<String> BEResult = client.hashPassword(passwords, logRounds);
                     nodeProperties.reduceLoad(passwords.size(), logRounds);
                     nodeProperties.markFree();
+                    System.out.println("FE Node: successfully offloaded hash password operation to the BE Node.");
                     return BEResult;
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
@@ -73,7 +78,7 @@ public class BcryptServiceHandler implements BcryptService.Iface {
                 }
             }
 
-            System.out.println("All BENodes are dead");
+            System.out.println("FE Node: failed to offload hash password operation to a BE Node. Starting operation with FE Node.");
             try {
                 hashPassword(passwords, logRounds, res, 0, passwords.size());
                 return Arrays.asList(res);
@@ -89,6 +94,7 @@ public class BcryptServiceHandler implements BcryptService.Iface {
         Boolean[] res = new Boolean[passwords.size()];
 
         if (isBENode) {
+            System.out.println("BE Node: attempting to check password");
             Tracker.receivedBatch();
             try {
                 if (passwords.size() != hashes.size()) throw new Exception("passwords and hashes are not equal.");
@@ -114,7 +120,9 @@ public class BcryptServiceHandler implements BcryptService.Iface {
             }
         } else {
             NodeProperties nodeProperties = NodeManager.getAvailableNodeProperties();
+            System.out.println("FE Node: attempting to offload check password operation to the BE Node.");
             while (nodeProperties != null) {
+                System.out.println("Node Properties is not null!");
                 BcryptService.Client client = nodeProperties.getClient();
                 transport = nodeProperties.getTransport();
                 System.out.println("moving work over to the back end node: " + nodeProperties.nodeId);
@@ -124,6 +132,7 @@ public class BcryptServiceHandler implements BcryptService.Iface {
                     List<Boolean> BEResult = client.checkPassword(passwords, hashes);
                     nodeProperties.reduceLoad(passwords.size(), (short)0);
                     nodeProperties.markFree();
+                    System.out.println("FE Node: successfully offloaded check password operation to the BE Node.");
                     return BEResult;
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
@@ -133,6 +142,7 @@ public class BcryptServiceHandler implements BcryptService.Iface {
                     if (transport != null && transport.isOpen()) transport.close();
                 }
             }
+            System.out.println("FE Node: failed to offload check password operation to a BE Node. Starting operation with FE Node.");
             try {
                 checkPassword(passwords, hashes, res, 0, passwords.size());
                 return Arrays.asList(res);
@@ -152,7 +162,8 @@ public class BcryptServiceHandler implements BcryptService.Iface {
         }
     }
     
-    public static void heartBeat(String hostname, String port) throws IllegalArgument, org.apache.thrift.TException {
+    public void heartBeat(String hostname, String port) throws IllegalArgument, org.apache.thrift.TException {
+        System.out.println("Received heartbeat from host: " + hostname + ", port: " + port);
 		try {
 			String nodeId = hostname + port;
 			if (!NodeManager.containsNode(nodeId)) {
