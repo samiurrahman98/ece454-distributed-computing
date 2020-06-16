@@ -9,9 +9,13 @@ import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TFramedTransport;
 import org.apache.thrift.transport.TTransportFactory;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class TestClient {
     private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
-    
+    private static final int MaxRoundValue = 4096;
+
     public static String randPwdGen(int length) {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < length; i++) {
@@ -30,38 +34,91 @@ public class TestClient {
     }
 
     public static void main(String [] args) {
-        if (args.length != 3) {
-            System.err.println("Usage: java TestClient FE_host FE_port password");
-            System.exit(-1);
-        }
+		if (args.length != 3) {
+			System.err.println("Usage: java Client FE_host FE_port password");
+			System.exit(-1);
+		}
 
-        try {
-            TSocket sock = new TSocket(args[0], Integer.parseInt(args[1]));
-            TTransport transport = new TFramedTransport(sock);
-            TProtocol protocol = new TBinaryProtocol(transport);
-            BcryptService.Client client = new BcryptService.Client(protocol);
-            transport.open();
+		try {
+			TSocket sock = new TSocket(args[0], Integer.parseInt(args[1]));
+			TTransport transport = new TFramedTransport(sock);
+			TProtocol protocol = new TBinaryProtocol(transport);
+			BcryptService.Client client = new BcryptService.Client(protocol);
+			transport.open();
 
-            List<String> password = TestClient.randPasswords(16, 20);
-            // password.add(args[2]);
-            // password.add(TestClient.randPwdGen(20));
-            List<String> hash = client.hashPassword(password, (short)10);
-            System.out.println("Password: " + password.get(0));
-            System.out.println("Hash: " + hash.get(0));
-            System.out.println("Positive check: " + client.checkPassword(password, hash));
-            hash.set(0, "$2a$14$reBHJvwbb0UWqJHLyPTVF.6Ld5sFRirZx/bXMeMmeurJledKYdZmG");
-            System.out.println("Negative check: " + client.checkPassword(password, hash));
-            try {
-            hash.set(0, "too short");
-            List<Boolean> rets = client.checkPassword(password, hash);
-            System.out.println("Exception check: no exception thrown");
-            } catch (Exception e) {
-            System.out.println("Exception check: exception thrown");
+			try {
+                FileWriter myWriter = new FileWriter("testClient.csv");
+                FileWriter myWriter2 = new FileWriter("testClient2.csv");
+                FileWriter myWriter3 = new FileWriter("testClient3.csv");
+                myWriter.write("LogRounds, Hash-Tput, Hash-Latency" + System.lineSeparator());
+                myWriter2.write("LogRounds, Check-Tput-Positive, Check-Latency-Positive" + System.lineSeparator());                
+                myWriter3.write("LogRounds, Check-Tput-Negative, Check-Latency-Negative" + System.lineSeparator());
+                int numRounds = 256;
+                long startTime;
+                long endTime;
+                for (short s = 8; s <= 12; s++) {
+                    int n = MaxRoundValue/numRounds;
+                    List<String> password = randPasswords(n, 1024);
+                    numRounds *= 2;
+                    startTime = System.currentTimeMillis();
+                    List<String> hash = client.hashPassword(password, (short)10);
+                    endTime = System.currentTimeMillis();
+                    myWriter.write(s + "," + n * 1000f/(endTime-startTime) + "," + (endTime-startTime)/n + System.lineSeparator());
+                    startTime = System.currentTimeMillis();
+                    List<Boolean> check = client.checkPassword(password, hash);
+                    System.out.println("Positive check: " + client.checkPassword(password, hash));
+                    endTime = System.currentTimeMillis();
+                    myWriter2.write(s + "," + n * 1000f/(endTime-startTime) + "," + (endTime-startTime)/n + System.lineSeparator());
+                    for (int i = 0; i < hash.size(); i++) {
+			    	    hash.set(i, "$2a$14$reBHJvwbb0UWqJHLyPTVF.6Ld5sFRirZx/bXMeMmeurJledKYdZmG");
+			        }
+                    startTime = System.currentTimeMillis();
+                    check = client.checkPassword(password, hash);
+                    endTime = System.currentTimeMillis();
+                    System.out.println("Negative check: " + client.checkPassword(password, hash));
+                    myWriter3.write(s + "," + n * 1000f/(endTime-startTime) + "," + (endTime-startTime)/n + System.lineSeparator());
+                }            
+                myWriter.close();
+                myWriter2.close();
+                myWriter3.close();
+                System.out.println("Test complete!");
+            } catch(IOException ioe) {
+                System.out.println("Couldn't write to testClient.csv due to IO Exception");
             }
-
-            transport.close();
-        } catch (TException x) {
-            x.printStackTrace();
-        } 
+			transport.close();
+		} catch (TException x) {
+			x.printStackTrace();
+		} 
     }
 }
+
+// public class TestClient {
+//     public static void main(String [] args) {
+//         try {
+//             String plaintextPassword = "ABCDEFG";
+
+//             TSocket sock = new TSocket(args[0], Integer.parseInt(args[1]));
+//             TTransport transport = new TFramedTransport(sock);
+//             TProtocol protocol = new TBinaryProtocol(transport);
+//             BcryptService.Client client = new BcryptService.Client(protocol);
+//             transport.open();
+
+//             List<String> password = genPasswordList();
+//             List<String> hash = client.hashPassword(password, (short)10);
+//             System.out.println("Check: " + client.checkPassword(password, hash));
+
+//             transport.close();
+//         } catch (TException x) {
+//             x.printStackTrace();
+//         }
+//     }
+
+//     public static List<String> genPasswordList() {
+//         List<String> l = new ArrayList<String>(1024);
+//         String somebigpassword = "faldskfjalkdsjfalkfdjasfoeiurqoeueoirqueroqiewurewqodfnmdsalkfjdsalkfjaslkfajflasdjfadslfkajdflkjfdalkadfjlkdfjfadsflkjafaldskfjalkdsjfalkfdjasfoeiurqoeueoirqueroqiewurewqodfnmdsalkfjdsalkfjaslkfajflasdjfadslfkajdflkjfdalkadfjlkdfjfadsflkjafaldskfjalkdsjfalkfdjasfoeiurqoeueoirqueroqiewurewqodfnmdsalkfjdsalkfjaslkfajflasdjfadslfkajdflkjfdalkadfjlkdfjfadsflkjafaldskfjalkdsjfalkfdjasfoeiurqoeueoirqueroqiewurewqodfnmdsalkfjdsalkfjaslkfajflasdjfadslfkajdflkjfdalkadfjlkdfjfadsflkjafaldskfjalkdsjfalkfdjasfoeiurqoeueoirqueroqiewurewqodfnmdsalkfjdsalkfjaslkfajflasdjfadslfkajdflkjfdalkadfjlkdfjfadsflkjafaldskfjalkdsjfalkfdjasfoeiurqoeueoirqueroqiewurewqodfnmdsalkfjdsalkfjaslkfajflasdjfadslfkajdflkjfdalkadfjlkdfjfadsflkjafaldskfjalkdsjfalkfdjasfoeiurqoeueoirqueroqiewurewqodfnmdsalkfjdsalkfjaslkfajflasdjfadslfkajdflkjfdalkadfjlkdfjfadsflkjafaldskfjalkdsjfalkfdjasfoeiurqoeueoirqueroqiewurewqodfnmdsalkfjdsalkfjaslkfajflasdjfadslfkajdflkjfdalkadfjlkdfjfadsflkjafaldskfjalkdsjfalkfdjasfoeiurqoeueoirqueroqiewurvcvmvcmdoiZZ";
+//         for (int i = 0; i < 100; i++) {
+//             l.add(somebigpassword + i);
+//         }
+//         return l;
+//     }
+// }
