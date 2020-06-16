@@ -1,0 +1,28 @@
+Number of BE nodes: 2
+Number of 1024 char pwds, Total time
+Hash size: 128 took: 7632
+Check size: 128 true took:13682
+Number of BE nodes: 2
+Number of 1024 char pwds, Total time
+Hash size: 128 took: 13789
+Check size: 128 true took:14012
+Number of BE nodes: 2
+Number of 1024 char pwds, Total time
+Hash size: 128 took: 14346
+Check size: 128 true took:20716
+Number of BE nodes: 2
+Number of 1024 char pwds, Total time
+Hash size: 128 took: 7128
+Check size: 128 true took:34012
+Number of BE nodes: 2
+Number of 1024 char pwds, Total time
+Hash size: 128 took: 20270
+Check size: 128 true took:21873
+Number of BE nodes: 2
+Number of 1024 char pwds, Total time
+Hash size: 128 took: 34180
+Check size: 128 true took:12977
+Number of BE nodes: 2
+Number of 1024 char pwds, Total time
+Hash size: 128 took: 26944
+Check size: 128 true took:21311

@@ -73,13 +73,15 @@ class BasicClient implements Runnable{
                 transport.open();
 
                 try {
-                    long startTime = System.currentTimeMillis();
                     List<String> passwords = randPasswords(128, 1024);
+                    long startTime = System.currentTimeMillis();
                     List<String> hash = client.hashPassword(passwords, (short)10);
                     long endTime = System.currentTimeMillis();
                     // DELETE CONTENTS OF CSV FILE BEFORE RUNNING THIS CODE AGAIN
-                    FileWriter myWriter = new FileWriter("MultiThreadClient.csv", true);
-                    myWriter.write("size: " + passwords.size() + " took: " + (endTime - startTime) + System.lineSeparator());
+                    FileWriter myWriter = new FileWriter("MultiThreadClient4.csv", true);
+                    myWriter.write("Number of BE nodes: 4\n");
+                    myWriter.write("Number of 1024 char pwds, Total time\n");
+                    myWriter.write("Hash size: " + passwords.size() + " took: " + (endTime - startTime) + System.lineSeparator());
 
                     startTime = System.currentTimeMillis();
                     List<Boolean> results = client.checkPassword(passwords, hash);
