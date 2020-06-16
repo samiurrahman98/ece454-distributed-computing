@@ -108,6 +108,7 @@ public class BcryptServiceHandler implements BcryptService.Iface {
         if (passwords.size() == 0) throw new IllegalArgument(("checkPassword: passwords list cannot be empty"));
         if (hashes.size() == 0) throw new IllegalArgument(("checkPassword: hashes list cannot be empty"));
 
+
         TTransport transport = null;
         Boolean[] result = new Boolean[passwords.size()];
 
