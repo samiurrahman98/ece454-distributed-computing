@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class MultiThreadClient{
+public class Workload2Test{
 
     private static ExecutorService execService = Executors.newCachedThreadPool(new ThreadFactory() {
         private AtomicInteger threadCounter = new AtomicInteger(0);
@@ -29,19 +29,19 @@ public class MultiThreadClient{
     });
 
     public static void main(String [] args) {
-        BasicClient bClient = new BasicClient (args[0], args[1]);
-        for (int i = 0; i < 20; i++) {            
+        BasicClient2 bClient = new BasicClient2 (args[0], args[1]);
+        for (int i = 0; i < 16; i++) {            
             execService.submit(bClient);
         }
     }
 }
 
-class BasicClient implements Runnable{
+class BasicClient2 implements Runnable{
     private String hostName;
     private String port;
     private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
     
-    public BasicClient(String hostName, String port) {
+    public BasicClient2(String hostName, String port) {
         this.hostName = hostName;
         this.port = port;
     }
@@ -73,28 +73,28 @@ class BasicClient implements Runnable{
                 transport.open();
 
                 try {
-                    FileWriter myWriter = new FileWriter("MultiThreadClient-hash.csv", true);                
-                    FileWriter myWriter2 = new FileWriter("MultiThreadClient-check.csv", true);
-                    int numPwds = 128;
+                    FileWriter myWriter = new FileWriter("WorkLoad2-hash.csv", true);                
+                    FileWriter myWriter2 = new FileWriter("WorkLoad2-check.csv", true);
+                    int numPwds = 1;
                     List<String> passwords = randPasswords(numPwds, 1024);
                     long startTime;
                     long endTime;      
                     myWriter.write("Thread, LogRounds, Hash-Tput, Hash-Latency" + System.lineSeparator());
                     myWriter2.write("Thread, LogRounds, Check-Tput, Check-Latency" + System.lineSeparator());
-                    for(short logRounds = 4; logRounds <= 16; logRounds++) {
+                    for(short logRounds = 8; logRounds <= 12; logRounds++) {
                         startTime = System.currentTimeMillis();
                         List<String> hash = client.hashPassword(passwords, logRounds);
                         endTime = System.currentTimeMillis();                   
-                        myWriter.write(Thread.currentThread().getName() + "," + logRounds + "," + numPwds*1000f/(endTime-startTime) + "," + ((endTime-startTime)/numPwds) + System.lineSeparator());
+                        myWriter.write(Thread.currentThread().getName() + "," + logRounds + "," + 1000f/(endTime-startTime) + "," + ((endTime-startTime)) + System.lineSeparator());
                         startTime = System.currentTimeMillis();
                         List<Boolean> checks = client.checkPassword(passwords, hash);
                         endTime = System.currentTimeMillis();
-                        myWriter2.write(Thread.currentThread().getName() + "," + logRounds + "," + numPwds*1000f/(endTime-startTime) + "," + ((endTime-startTime)/numPwds) + System.lineSeparator());
+                        myWriter2.write(Thread.currentThread().getName() + "," + logRounds + "," + 1000f/(endTime-startTime) + "," + ((endTime-startTime)) + System.lineSeparator());
                     }
                     myWriter.close();
                     myWriter2.close();
                 } catch(IOException ioe) {
-                    System.out.println("Couldn't write to MultiThreadClient-hash.csv and/or MultiThreadClient-check.csv");
+                    System.out.println("Couldn't write to WorkLoad2-hash.csv and/or WorkLoad2-check.csv");
                 }
 
 
