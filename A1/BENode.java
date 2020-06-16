@@ -54,7 +54,6 @@ public class BENode {
 		BcryptService.Client client = new BcryptService.Client(protocol);
 
         FENodeRunnable FENodeConnection = new FENodeRunnable(transport, client, hostBE, args[2]);
-        // FENodeRunnable FENodeConnection = new FENodeRunnable(transport, hostBE, args[2]);
         FENodeConnection.establishConnectionToFENode();
         executorService.submit(FENodeConnection);
 
