@@ -9,7 +9,7 @@ public class FENodeRunnable implements Runnable {
     private final String port;
 
     private static final int MAX_ATTEMPTS = 100;
-    private static final long RETRY_WAIT_TIME = 200;
+    private static final Duration RETRY_WAIT_TIME = Duration.ofMillis(200);
 
     public FENodeRunnable (TTransport transport, BcryptService.Client client, String hostname, String port) {
         this.transport = transport;
@@ -51,7 +51,7 @@ public class FENodeRunnable implements Runnable {
             } catch (Exception e) {
                 numAttempts++;
                 try {
-                    Thread.sleep(RETRY_WAIT_TIME);
+                    Thread.sleep(RETRY_WAIT_TIME.toMillis());
                 } catch (Exception ex) {
                     System.out.println(ex.getMessage());
                 }
