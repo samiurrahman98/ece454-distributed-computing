@@ -10,13 +10,19 @@ import java.util.Map;
 public class NodeManager {
     private static ConcurrentHashMap<String, NodeProperties> nodeMap = new ConcurrentHashMap<String, NodeProperties>();
 
+    /* 
+    ** Function: getAvailableNodeProperties
+    ** Purpose: invoked to determine whether a FE Node can offload work to a BE node
+    ** Parameters: none
+    ** Returns: NodeProperties node (first available node with enough capacity) or null
+    */
     public static synchronized NodeProperties getAvailableNodeProperties() {
-        System.out.println("nodeMap: " + nodeMap.toString());
         if (nodeMap.size() == 0) return null;
 
         for (NodeProperties node: nodeMap.values()) {
             if (node.isNotOccupied()) {
                 node.markOccupied();
+
                 return node;
             }
         }
@@ -27,30 +33,23 @@ public class NodeManager {
 
         if (nodeProperties == null) return null;
 
-        String hostname = nodeProperties.getHostname();
-        String port = nodeProperties.getPort();
-
         try {
-            nodeProperties = new NodeProperties(hostname, port);
+            nodeProperties = new NodeProperties(nodeProperties.getHostname(), nodeProperties.getPort());
+
             return nodeProperties;
         } catch (Exception e) {
-            System.out.println("failed to create new Node from " + hostname + " " + port);
+            e.printStackTrace();
         }
+
         return null;
     }
 
     public static void addNode(String nodeId, NodeProperties nodeProperties) {
         nodeMap.put(nodeId, nodeProperties);
-        System.out.println("nodeId: " + nodeId);
-        System.out.println("hostname: " + nodeProperties.getHostname());
-        System.out.println("port: " + nodeProperties.getPort());
-        System.out.println("is not occupied? " + nodeProperties.isNotOccupied());
-        System.out.println("number of available nodes: " + nodeMap.size());
     }
 
     public static void removeNode(String nodeId) {
        NodeProperties nodeProperties = nodeMap.remove(nodeId);
-       if (nodeProperties == null) System.out.println("Tried to remove " + nodeId + "from nodeMap but it did not exist");
     }
 
     public static boolean containsNode(String nodeId) {

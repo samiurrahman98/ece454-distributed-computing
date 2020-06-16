@@ -4,9 +4,6 @@ import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.transport.TFramedTransport;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.Map;
-
 /**
 * A class representing a BENode info
 */

@@ -9,7 +9,7 @@ public class FENodeRunnable implements Runnable {
     private final String port;
 
     private static final int MAX_ATTEMPTS = 100;
-    private static final Duration RETRY_WAIT_TIME = Duration.ofSeconds(3);
+    private static final Duration RETRY_WAIT_TIME = Duration.ofMillis(500);
 
     public FENodeRunnable (TTransport transport, BcryptService.Client client, String hostname, String port) {
         this.transport = transport;
@@ -24,34 +24,34 @@ public class FENodeRunnable implements Runnable {
             try {
                 Thread.sleep(Tracker.TIMEOUT.toMillis());
             } catch (Exception e) {
-                System.out.println("interrupted thread on FENodeRunnable");
-                System.out.println(e.getMessage());
                 e.printStackTrace();
             }
 
             if (Tracker.isFENodeDown()) {
-                System.out.println("FENode is down!");
                 establishConnectionToFENode();
             }
         }
     }
 
+    /* 
+    ** Function: establishConnectionToFENode
+    ** Purpose: invoked by BE Node to attempt to establish a connection to a FE Node
+    ** Parameters: none
+    ** Returns: void
+    */
     public void establishConnectionToFENode() {
         int numAttempts = 0;
-
-        System.out.println("Attempting to establish connection to FE Node.");
         while (numAttempts < MAX_ATTEMPTS) {
             try {
                 transport.open();
                 FENodeClient.heartBeat(hostname, port);
                 transport.close();
-
-                System.out.println("Successfully found FENode");
+                
                 return;
             } catch (Exception e) {
                 numAttempts++;
                 try {
-                    Thread.sleep(RETRY_WAIT_TIME.toMillis());
+                    Thread.sleep(RETRY_WAIT_TIME);
                 } catch (Exception ex) {
                     System.out.println(ex.getMessage());
                 }
@@ -59,6 +59,5 @@ public class FENodeRunnable implements Runnable {
                 if (transport.isOpen()) transport.close();
             }
         }
-        System.out.println("Failed to connect " + MAX_ATTEMPTS + " times to the FENode");
     }
 }
