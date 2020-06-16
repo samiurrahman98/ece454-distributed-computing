@@ -90,6 +90,9 @@ public class BcryptServiceHandler implements BcryptService.Iface {
 
     public List<Boolean> checkPassword(List<String> passwords, List<String> hashes) throws IllegalArgument, org.apache.thrift.TException
     {
+        if (passwords.size() != hashes.size()) throw new IllegalArgument("passwords and hashes are not equal.");
+        if (passwords.size() == 0) throw new IllegalArgument("password list cannot be empty");
+        if (hashes.size() == 0) throw new IllegalArgument("hashes list cannot be empty");
         TTransport transport = null;
         Boolean[] res = new Boolean[passwords.size()];
 
@@ -97,8 +100,6 @@ public class BcryptServiceHandler implements BcryptService.Iface {
             System.out.println("BE Node: attempting to check password");
             Tracker.receivedBatch();
             try {
-                if (passwords.size() != hashes.size()) throw new Exception("passwords and hashes are not equal.");
-                if (passwords.size() == 0) throw new Exception(("password list cannot be empty"));
 
                 int size = passwords.size();
                 int numThreads = Math.min(size, 4);
