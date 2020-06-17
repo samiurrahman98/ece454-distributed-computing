@@ -51,7 +51,7 @@ public class FENodeRunnable implements Runnable {
             } catch (Exception e) {
                 numAttempts++;
                 try {
-                    Thread.sleep(RETRY_WAIT_TIME);
+                    Thread.sleep(RETRY_WAIT_TIME.toMillis());
                 } catch (Exception ex) {
                     System.out.println(ex.getMessage());
                 }
