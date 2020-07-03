@@ -1,0 +1,96 @@
+Thread, LogRounds, Hash-Tput, Hash-Latency
+client-thread-4,8,13.513514,74
+client-thread-4,9,9.433962,106
+client-thread-4,10,5.6179776,178
+client-thread-4,11,2.9069767,344
+client-thread-4,12,1.4662757,682
+Thread, LogRounds, Hash-Tput, Hash-Latency
+client-thread-6,8,10.204082,98
+client-thread-6,9,9.615385,104
+client-thread-6,10,5.681818,176
+client-thread-6,11,2.840909,352
+client-thread-6,12,1.3661202,732
+Thread, LogRounds, Hash-Tput, Hash-Latency
+client-thread-13,8,12.820513,78
+client-thread-13,9,8.064516,124
+client-thread-13,10,6.0240965,166
+client-thread-13,11,3.144654,318
+client-thread-13,12,1.3679891,731
+Thread, LogRounds, Hash-Tput, Hash-Latency
+client-thread-16,8,10.3092785,97
+client-thread-16,9,8.474576,118
+client-thread-16,10,6.25,160
+client-thread-16,11,2.7322404,366
+client-thread-16,12,1.3386881,747
+Thread, LogRounds, Hash-Tput, Hash-Latency
+client-thread-14,8,10.3092785,97
+client-thread-14,9,9.433962,106
+client-thread-14,10,5.050505,198
+client-thread-14,11,2.840909,352
+client-thread-14,12,1.2886598,776
+Thread, LogRounds, Hash-Tput, Hash-Latency
+client-thread-9,8,22.727272,44
+client-thread-9,9,7.6923075,130
+client-thread-9,10,4.716981,212
+client-thread-9,11,2.3364487,428
+client-thread-9,12,1.1547344,866
+Thread, LogRounds, Hash-Tput, Hash-Latency
+client-thread-5,8,28.571428,35
+client-thread-5,9,7.751938,129
+client-thread-5,10,4.5454545,220
+client-thread-5,11,2.43309,411
+client-thread-5,12,1.1299435,885
+Thread, LogRounds, Hash-Tput, Hash-Latency
+client-thread-3,8,29.411764,34
+client-thread-3,9,8.849558,113
+client-thread-3,10,4.464286,224
+client-thread-3,11,2.232143,448
+client-thread-3,12,1.0989012,910
+Thread, LogRounds, Hash-Tput, Hash-Latency
+client-thread-7,8,12.987013,77
+client-thread-7,9,9.174312,109
+client-thread-7,10,4.6511626,215
+client-thread-7,11,2.183406,458
+client-thread-7,12,1.1160715,896
+Thread, LogRounds, Hash-Tput, Hash-Latency
+client-thread-12,8,9.615385,104
+client-thread-12,9,7.4074073,135
+client-thread-12,10,4.2735043,234
+client-thread-12,11,1.9723866,507
+client-thread-12,12,1.0683761,936
+Thread, LogRounds, Hash-Tput, Hash-Latency
+client-thread-1,8,18.518518,54
+client-thread-1,9,8.264462,121
+client-thread-1,10,3.7735848,265
+client-thread-1,11,1.9646366,509
+client-thread-1,12,0.95510983,1047
+Thread, LogRounds, Hash-Tput, Hash-Latency
+client-thread-11,8,29.411764,34
+client-thread-11,9,7.518797,133
+client-thread-11,10,4.5045047,222
+client-thread-11,11,2.3310022,429
+client-thread-11,12,0.99304867,1007
+Thread, LogRounds, Hash-Tput, Hash-Latency
+client-thread-15,8,12.820513,78
+client-thread-15,9,7.246377,138
+client-thread-15,10,4.0,250
+client-thread-15,11,1.968504,508
+client-thread-15,12,0.9191176,1088
+Thread, LogRounds, Hash-Tput, Hash-Latency
+client-thread-10,8,25.0,40
+client-thread-10,9,6.7114096,149
+client-thread-10,10,3.6630037,273
+client-thread-10,11,2.053388,487
+client-thread-10,12,0.9560229,1046
+Thread, LogRounds, Hash-Tput, Hash-Latency
+client-thread-2,8,19.23077,52
+client-thread-2,9,7.352941,136
+client-thread-2,10,3.6630037,273
+client-thread-2,11,1.8050542,554
+client-thread-2,12,0.9174312,1090
+Thread, LogRounds, Hash-Tput, Hash-Latency
+client-thread-8,8,13.513514,74
+client-thread-8,9,7.0422535,142
+client-thread-8,10,3.3670034,297
+client-thread-8,11,1.6778524,596
+client-thread-8,12,0.856898,1167

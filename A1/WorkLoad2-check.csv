@@ -1,0 +1,96 @@
+Thread, LogRounds, Check-Tput, Check-Latency
+client-thread-4,8,41.666668,24
+client-thread-4,9,8.0,125
+client-thread-4,10,3.9840639,251
+client-thread-4,11,1.9417475,515
+client-thread-4,12,0.9871668,1013
+Thread, LogRounds, Check-Tput, Check-Latency
+client-thread-6,8,30.30303,33
+client-thread-6,9,7.4074073,135
+client-thread-6,10,4.132231,242
+client-thread-6,11,1.8796992,532
+client-thread-6,12,0.9823183,1018
+Thread, LogRounds, Check-Tput, Check-Latency
+client-thread-13,8,21.276596,47
+client-thread-13,9,8.264462,121
+client-thread-13,10,3.7593985,266
+client-thread-13,11,1.9607843,510
+client-thread-13,12,0.9099181,1099
+Thread, LogRounds, Check-Tput, Check-Latency
+client-thread-16,8,45.454544,22
+client-thread-16,9,6.7114096,149
+client-thread-16,10,3.6363637,275
+client-thread-16,11,1.9157088,522
+client-thread-16,12,0.8635579,1158
+Thread, LogRounds, Check-Tput, Check-Latency
+client-thread-14,8,32.258064,31
+client-thread-14,9,7.4626865,134
+client-thread-14,10,3.4602077,289
+client-thread-14,11,1.6750419,597
+client-thread-14,12,0.89928055,1112
+Thread, LogRounds, Check-Tput, Check-Latency
+client-thread-9,8,18.867924,53
+client-thread-9,9,8.064516,124
+client-thread-9,10,4.032258,248
+client-thread-9,11,1.9493177,513
+client-thread-9,12,0.9165903,1091
+Thread, LogRounds, Check-Tput, Check-Latency
+client-thread-5,8,14.492754,69
+client-thread-5,9,7.4074073,135
+client-thread-5,10,4.0650406,246
+client-thread-5,11,1.9493177,513
+client-thread-5,12,0.91157705,1097
+Thread, LogRounds, Check-Tput, Check-Latency
+client-thread-3,8,23.809525,42
+client-thread-3,9,7.246377,138
+client-thread-3,10,3.937008,254
+client-thread-3,11,1.9120458,523
+client-thread-3,12,0.8733624,1145
+Thread, LogRounds, Check-Tput, Check-Latency
+client-thread-7,8,15.384615,65
+client-thread-7,9,6.993007,143
+client-thread-7,10,3.649635,274
+client-thread-7,11,1.9230769,520
+client-thread-7,12,0.80580175,1241
+Thread, LogRounds, Check-Tput, Check-Latency
+client-thread-12,8,12.820513,78
+client-thread-12,9,7.0422535,142
+client-thread-12,10,3.7037036,270
+client-thread-12,11,2.008032,498
+client-thread-12,12,0.8481764,1179
+Thread, LogRounds, Check-Tput, Check-Latency
+client-thread-1,8,15.625,64
+client-thread-1,9,6.756757,148
+client-thread-1,10,3.8910506,257
+client-thread-1,11,2.0,500
+client-thread-1,12,0.89605737,1116
+Thread, LogRounds, Check-Tput, Check-Latency
+client-thread-11,8,12.820513,78
+client-thread-11,9,8.264462,121
+client-thread-11,10,3.5335689,283
+client-thread-11,11,1.6366612,611
+client-thread-11,12,0.86281276,1159
+Thread, LogRounds, Check-Tput, Check-Latency
+client-thread-15,8,11.235955,89
+client-thread-15,9,7.518797,133
+client-thread-15,10,3.816794,262
+client-thread-15,11,1.8903592,529
+client-thread-15,12,0.8305648,1204
+Thread, LogRounds, Check-Tput, Check-Latency
+client-thread-10,8,10.638298,94
+client-thread-10,9,7.8125,128
+client-thread-10,10,3.5714285,280
+client-thread-10,11,1.8382353,544
+client-thread-10,12,0.80128205,1248
+Thread, LogRounds, Check-Tput, Check-Latency
+client-thread-2,8,10.526316,95
+client-thread-2,9,7.4074073,135
+client-thread-2,10,4.0983605,244
+client-thread-2,11,1.6638935,601
+client-thread-2,12,0.8818342,1134
+Thread, LogRounds, Check-Tput, Check-Latency
+client-thread-8,8,9.345795,107
+client-thread-8,9,8.0,125
+client-thread-8,10,3.7037036,270
+client-thread-8,11,1.9723866,507
+client-thread-8,12,0.88731146,1127

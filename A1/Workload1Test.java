@@ -49,18 +49,16 @@ public class Workload1Test {
                 long endTime;      
                 myWriter.write("LogRounds, Hash-Tput, Hash-Latency" + System.lineSeparator());
                 myWriter2.write("LogRounds, Check-Tput, Check-Latency" + System.lineSeparator());
-                int numRounds = 256;
+                
                 for(short logRounds = 8; logRounds <= 12; logRounds++) {
-                    int n = MaxRoundValue/numRounds;
                     startTime = System.currentTimeMillis();
                     List<String> hash = client.hashPassword(passwords, logRounds);
                     endTime = System.currentTimeMillis();                   
-                    myWriter.write(logRounds + "," + n * 1000f/(endTime-startTime) + "," + ((endTime-startTime)/n) + System.lineSeparator());
+                    myWriter.write(logRounds + "," + numPwds * 1000f/(endTime-startTime) + "," + ((endTime-startTime)/numPwds) + System.lineSeparator());
                     startTime = System.currentTimeMillis();
                     List<Boolean> checks = client.checkPassword(passwords, hash);
                     endTime = System.currentTimeMillis();
-                    myWriter2.write(logRounds + "," + n * 1000f/(endTime-startTime) + "," + ((endTime-startTime)/n) + System.lineSeparator());
-                    numRounds *= 2;
+                    myWriter2.write(logRounds + "," + numPwds * 1000f/(endTime-startTime) + "," + ((endTime-startTime)/numPwds) + System.lineSeparator());
                 }
                 myWriter.close();
                 myWriter2.close();
