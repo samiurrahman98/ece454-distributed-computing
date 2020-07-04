@@ -37,6 +37,6 @@ object Task3 {
     }).reduceByKey(_ + _)
       .map(x => x._1 + "," + x._2)
       
-      output.saveAsTextFile(args(1))
+      output.coalesce(1).saveAsTextFile(args(1))
   }
 }

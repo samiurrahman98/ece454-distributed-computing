@@ -80,9 +80,9 @@ public class Task4 {
     }
 
     Job job = Job.getInstance(conf, "Task IV: similarity between movies");
+    
     job.setJarByClass(Task4.class);
-
-    job.setMapperClass(MovieSimilarityMapper.class);
+    job.setMapperClass(Task4.MovieSimilarityMapper.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(NullWritable.class);
 
