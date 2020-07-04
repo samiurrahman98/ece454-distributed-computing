@@ -32,9 +32,9 @@ OUTPUT=/user/${USER}/Task1_hadoop_output/
 $HADOOP_HOME/bin/hdfs dfs -rm -R $OUTPUT
 $HADOOP_HOME/bin/hdfs dfs -copyFromLocal sample_input/smalldata.txt /user/${USER}/
 time $HADOOP_HOME/bin/yarn jar Task1.jar Task1 -D mapreduce.map.java.opts=-Xmx4g $INPUT $OUTPUT
-$HADOOP_HOME/bin/hdfs dfs -get $OUTPUT/ /home/vskottur/ece454/assignments/A2/
+$HADOOP_HOME/bin/hdfs dfs -get $OUTPUT /home/vskottur/ece454/assignments/A2/
 $HADOOP_HOME/bin/hdfs dfs -ls $OUTPUT
-$HADOOP_HOME/bin/hdfs dfs -cat $OUTPUT/*
+$HADOOP_HOME/bin/hdfs dfs -cat $OUTPUT*
 
 cat Task1_hadoop_output/part-m-00000 | sort -r > sample_output/Task1_output.txt
 cat sample_output/Task1_sample.txt | sort -r > sample_output/Task1_sample_ordered.txt

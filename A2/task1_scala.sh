@@ -41,7 +41,7 @@ $HADOOP_HOME/bin/hdfs dfs -get $OUTPUT/ /home/vskottur/ece454/assignments/A2/
 
 export HADOOP_ROOT_LOGGER="WARN"
 $HADOOP_HOME/bin/hdfs dfs -ls $OUTPUT
-$HADOOP_HOME/bin/hdfs dfs -cat $OUTPUT/*
+$HADOOP_HOME/bin/hdfs dfs -cat $OUTPUT*
 
 cat Task1_scala_output/part-00000 | sort > sample_output/Task1_scala_output.txt
 cat sample_output/Task1_sample.txt | sort > sample_output/Task1_sample_ordered.txt

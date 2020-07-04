@@ -37,11 +37,11 @@ OUTPUT=/user/${USER}/Task3_scala_output/
 $HADOOP_HOME/bin/hdfs dfs -rm -R $OUTPUT
 $HADOOP_HOME/bin/hdfs dfs -copyFromLocal sample_input/smalldata.txt /user/${USER}/
 time $SPARK_HOME/bin/spark-submit --master yarn --class Task3 --driver-memory 4g --executor-memory 4g Task3.jar $INPUT $OUTPUT
-$HADOOP_HOME/bin/hdfs dfs -get $OUTPUT/ /home/vskottur/ece454/assignments/A2/
+$HADOOP_HOME/bin/hdfs dfs -get $OUTPUT /home/vskottur/ece454/assignments/A2/
 
 export HADOOP_ROOT_LOGGER="WARN"
 $HADOOP_HOME/bin/hdfs dfs -ls $OUTPUT
-$HADOOP_HOME/bin/hdfs dfs -cat $OUTPUT/*
+$HADOOP_HOME/bin/hdfs dfs -cat $OUTPUT*
 
 cat Task3_scala_output/part-00000 | sort > sample_output/Task3_scala_output.txt
 cat sample_output/Task3_sample.txt | sort > sample_output/Task3_sample_ordered.txt
