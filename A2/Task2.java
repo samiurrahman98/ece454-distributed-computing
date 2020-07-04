@@ -16,7 +16,6 @@ import org.apache.hadoop.util.GenericOptionsParser;
 public class Task2 {
 
   public static class RatingCountMapper extends Mapper<Object, Text, NullWritable, IntWritable> {
-    private Text Counter = new Text("counter");
     private IntWritable one = new IntWritable(1);
 
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
@@ -54,12 +53,18 @@ public class Task2 {
     }
 
     Job job = new Job(conf, "Task II: total number of ratings");
+
     job.setJarByClass(Task2.class);
     job.setMapperClass(Task2.RatingCountMapper.class);
+    job.setCombinerClass(RatingCountReducer.class);
     job.setReducerClass(Task2.RatingCountReducer.class);
-    job.setNumReduceTasks(1);
-    job.setOutputKeyClass(Text.class);
+
+    job.setMapOutputKeyClass(NullWritable.class);
+    job.setMapOutputValueClass(IntWritable.class);
+    job.setOutputKeyClass(NullWritable.class);
     job.setOutputValueClass(IntWritable.class);
+
+    job.setNumReduceTasks(1);
 
     TextInputFormat.addInputPath(job, new Path(otherArgs[0]));
     TextOutputFormat.setOutputPath(job, new Path(otherArgs[1]));

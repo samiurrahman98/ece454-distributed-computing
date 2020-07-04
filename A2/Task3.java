@@ -54,10 +54,13 @@ public class Task3 {
     }
 
     Job job = Job.getInstance(conf, "Task III: total number of ratings per user");
+
     job.setJarByClass(Task3.class);
     job.setMapperClass(Task3.UserRatingMapper.class);
+    job.setCombinerClass(Task3.UserRatingReducer.class);
     job.setReducerClass(Task3.UserRatingReducer.class);
-    job.setOutputKeyClass(Text.class);
+
+    job.setOutputKeyClass(IntWritable.class);
     job.setOutputValueClass(IntWritable.class);
 
     TextInputFormat.addInputPath(job, new Path(otherArgs[0]));
