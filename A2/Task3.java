@@ -21,11 +21,9 @@ public class Task3 {
       String[] tokens = value.toString().split(",", -1);
 
       for (int i = 1; i < tokens.length; i++) {
-        String token = tokens[i];
-
-        if (!token.isEmpty()) {
+        if (!tokens[i].isEmpty()) {
           word.set(String.valueOf(i));
-          rating.set(Integer.valueOf(token));
+          rating.set(Integer.valueOf(1));
           context.write(word, rating);
         }
       }
@@ -36,17 +34,13 @@ public class Task3 {
     private final static Text average = new Text();
 
     public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
-      float sum = 0;
-      int len = 0;
+      int sum = 0;
 
       for (IntWritable val: values) {
-        sum += val.get();
-        len += 1
+        sum += 1;
       }
-
-      float avg = sum / count;
-      average.set(String.format("1.2f", avg));
-      context.write(key, avg);
+      average.set(Integer.toString(sum));
+      context.write(key, average);
     }
   }
     

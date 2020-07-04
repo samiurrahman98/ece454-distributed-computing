@@ -33,6 +33,6 @@ object Task1 {
       }
     )
     
-    output.saveAsTextFile(args(1))
+    output.coalesce(1).saveAsTextFile(args(1))
   }
 }

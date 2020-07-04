@@ -1,10 +1,13 @@
 import java.io.IOException;
 import java.util.StringTokenizer;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.ArrayPrimitiveWritable;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -71,7 +74,7 @@ public class Task4 {
       for (int i = 0; i < x.length; i++) {
         mul += x[i] * y[i];
         xSum += x[i] * x[i];
-        ybSum += y[i] * y[i];
+        ySum += y[i] * y[i];
       }
 
       return (mul / ((Math.sqrt(xSum) * Math.sqrt(ySum))));
@@ -83,7 +86,7 @@ public class Task4 {
     conf.set("mapreduce.output.textoutputformat.separator", ",");
     
     String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
-    if (othersArgs.length != 2) {
+    if (otherArgs.length != 2) {
       System.err.println("Usage: <rating avg <in> <out>");
       System.exit(2);
     }
