@@ -1,13 +1,10 @@
 import java.io.IOException;
-import java.util.StringTokenizer;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
@@ -15,43 +12,39 @@ import org.apache.hadoop.util.GenericOptionsParser;
 public class Task1 {
   public static class Rating extends Mapper<Object, Text, Text, Text> {
     private Text movieTitle = new Text();
-    private Text maxRatings = new Text();
+    private Text highestRatings = new Text();
 
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
       StringBuilder sb = new StringBuilder();
-
       String[] tokens = value.toString().split(",", -1);
 
       movieTitle.set(tokens[0]);
-      int maxRating = 0;
+      int highestRating = 0;
 
       for (int i = 1; i < tokens.length; i++) {
         String token = tokens[i];
-        int rating;
+        int rating = !token.isEmpty() ? Integer.valueOf(tokens[i]) : 0;
 
-        rating = token.isEmpty() ? 0 : Integer.valueOf(tokens[i]);
-
-        if (rating > maxRating) {
+        if (rating > highestRating) {
           sb = new StringBuilder();
           sb.append(String.valueOf(i));
-          maxRating = rating;
-        } else if (rating == maxRating) {
+          highestRating = rating;
+        } else if (rating == highestRating)
           sb.append("," + String.valueOf(i));
-        }
       }
 
-      maxRatings.set(sb.toString());
-      context.write(movieTitle, maxRatings);
-
+      highestRatings.set(sb.toString());
+      context.write(movieTitle, highestRatings);
     }
   }
+
   public static void main(String[] args) throws Exception {
     Configuration conf = new Configuration();
     conf.set("mapreduce.output.textoutputformat.separator", ",");
 
     String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
     if (otherArgs.length != 2) {
-      System.err.println("Usage: high rating <in> <out>");
+      System.err.println("Usage: <in> <out>");
       System.exit(2);
     }
 

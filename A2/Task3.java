@@ -13,34 +13,33 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
 public class Task3 {
-  public static class RatingAvgMapper extends Mapper<Object, Text, Text, IntWritable> {
-    private Text word = new Text();
-    private final static IntWritable rating = new IntWritable();
+  public static class UserRatingMapper extends Mapper<Object, Text, IntWritable, IntWritable> {
+    private final static IntWritable one = new IntWritable(1);
+    private IntWritable userId = new IntWritable();
 
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
       String[] tokens = value.toString().split(",", -1);
 
       for (int i = 1; i < tokens.length; i++) {
         if (!tokens[i].isEmpty()) {
-          word.set(String.valueOf(i));
-          rating.set(Integer.valueOf(1));
-          context.write(word, rating);
+          userId.set(i);
+          context.write(userId, one);
         }
       }
     }
   }
 
-  public static class RatingSumReducer extends Reducer<Text, IntWritable, Text, Text> {
-    private final static Text average = new Text();
+  public static class UserRatingReducer extends Reducer<IntWritable, IntWritable, IntWritable, IntWritable> {
+    private IntWritable result = new IntWritable();
 
-    public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
-      int sum = 0;
+    public void reduce(IntWritable key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+      int count = 0;
 
-      for (IntWritable val: values) {
-        sum += 1;
-      }
-      average.set(Integer.toString(sum));
-      context.write(key, average);
+      for (IntWritable val: values)
+        count += val.get();
+      
+      result.set(count);
+      context.write(key, result);
     }
   }
     
@@ -50,14 +49,14 @@ public class Task3 {
     
     String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
     if (otherArgs.length != 2) {
-      System.err.println("Usage: rating avg <in> <out>");
+      System.err.println("Usage: <in> <out>");
       System.exit(2);
     }
 
-    Job job = Job.getInstance(conf, "Task III: rating avg");
+    Job job = Job.getInstance(conf, "Task III: total number of ratings per user");
     job.setJarByClass(Task3.class);
-    job.setMapperClass(Task3.RatingAvgMapper.class);
-    job.setReducerClass(Task3.RatingSumReducer.class);
+    job.setMapperClass(Task3.UserRatingMapper.class);
+    job.setReducerClass(Task3.UserRatingReducer.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(IntWritable.class);
 

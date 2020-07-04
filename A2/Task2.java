@@ -4,8 +4,8 @@ import java.util.StringTokenizer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -15,30 +15,31 @@ import org.apache.hadoop.util.GenericOptionsParser;
 
 public class Task2 {
 
-  public static class RatingCountMapper extends Mapper<Object, Text, Text, IntWritable> {
-    private Text person = new Text();
-    private final static IntWritable one = new IntWritable(1);
+  public static class RatingCountMapper extends Mapper<Object, Text, NullWritable, IntWritable> {
+    private Text Counter = new Text("counter");
+    private IntWritable one = new IntWritable(1);
 
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
       String[] tokens = value.toString().split(",", -1);
-
+    
       for (int i = 1; i < tokens.length; i++) {
-        String token = tokens[i];
-        if (!token.isEmpty()) {
-          person.set("c");
-          context.write(person, one);
-        }
+        if (!tokens[i].isEmpty())
+          context.write(NullWritable.get(), one);
       }
     }
   }
 
-  public static class RatingCountReducer extends Reducer<Text, IntWritable, NullWritable, IntWritable> {
-    public void reduce (Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
-      int sum = 0;
-      for (IntWritable val: values)
-        sum += val.get();
+  public static class RatingCountReducer extends Reducer <NullWritable, IntWritable, NullWritable, IntWritable> {
+    private IntWritable result = new IntWritable();
 
-      context.write(NullWritable.get(), new IntWritable(sum));
+    public void reduce(NullWritable key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+      int count = 0;
+
+      for (IntWritable val: values)
+        count += val.get();
+
+      result.set(count);
+      context.write(NullWritable.get(), result);
     }
   }
     
@@ -48,11 +49,11 @@ public class Task2 {
 
     String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
     if (otherArgs.length != 2) {
-      System.err.println("Usage: rating count <in> <out>");
+      System.err.println("Usage: <in> <out>");
       System.exit(2);
     }
 
-    Job job = new Job(conf, "Task II: rating count");
+    Job job = new Job(conf, "Task II: total number of ratings");
     job.setJarByClass(Task2.class);
     job.setMapperClass(Task2.RatingCountMapper.class);
     job.setReducerClass(Task2.RatingCountReducer.class);
