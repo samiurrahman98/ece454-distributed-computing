@@ -20,7 +20,7 @@ public class Task2 {
     private final static IntWritable one = new IntWritable(1);
 
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-      String[] token = value.toString().split(",", -1);
+      String[] tokens = value.toString().split(",", -1);
 
       for (int i = 1; i < tokens.length; i++) {
         String token = tokens[i];
@@ -55,7 +55,7 @@ public class Task2 {
     Job job = new Job(conf, "Task II: rating count");
     job.setJarByClass(Task2.class);
     job.setMapperClass(Task2.RatingCountMapper.class);
-    Job.setReducerClass(Task2.RatingCountReducer.class);
+    job.setReducerClass(Task2.RatingCountReducer.class);
     job.setNumReduceTasks(1);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(IntWritable.class);
