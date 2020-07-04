@@ -53,9 +53,11 @@ object Task4 {
             if (ratings1(i) == ratings2(i) && ratings1(i) != 0)
               similarity += 1
           }
-          
+
           (title1 + "," + title2 + "," + similarity)
         })
-    }).saveAsTextFile(args(1))
+    })
+    
+    sc.parallelize(Seq(output)).coalesce(1).saveAsTextFile(args(1))
   }
 }
