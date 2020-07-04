@@ -1,20 +1,19 @@
 import org.apache.spark.{SparkContext, SparkConf}
-import scala.math.min
 import scala.collection.Map
 import org.apache.spark.rdd.RDD
 
 object Task4 {
-  def findSimilarity(ratings1: Array[Byte], ratings2: Array[Byte]): Int = {
-    var similarity = 0
+  // def findSimilarity(ratings1: Array[Byte], ratings2: Array[Byte]): Int = {
+  //   var similarity = 0
 
-    for(i <- 0 until ratings1.length){
-      if (ratings1(i) == ratings2(i) && ratings1(i) != 0) {
-        similarity += 1
-      }
-    }
+  //   for(i <- 0 until ratings1.length){
+  //     if (ratings1(i) == ratings2(i) && ratings1(i) != 0) {
+  //       similarity += 1
+  //     }
+  //   }
 
-    return similarity
-  } 
+  //   return similarity
+  // } 
 
   def buildMovieRatingsMap(movieRatings: RDD[String]): Map[String, Array[Byte]] = {
     movieRatings.map(movieRating => {
@@ -49,7 +48,12 @@ object Task4 {
           val title2 = movie2._1
           val ratings2 = movie2._2
 
-          val similarity = findSimilarity(ratings1, ratings2)
+          val similarity = 0
+          for(i <- 0 until ratings1.length) {
+            if (ratings1(i) == ratings2(i) && ratings1(i) != 0)
+              similarity += 1
+          }
+          
           (title1 + "," + title2 + "," + similarity)
         })
     }).saveAsTextFile(args(1))
