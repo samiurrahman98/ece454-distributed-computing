@@ -16,8 +16,8 @@ object Task3 {
 
         for (i <- 1 until ratings.length) {
           if (ratings(i) != "") {
-            var tuple = (i + 1, ratings(i).toInt);
-            key += tup;
+            var tuple = (i, 1);
+            key += tuple;
           }
         }
 
@@ -33,12 +33,14 @@ object Task3 {
       }
     ).map((tuple) => 
       {
-        var avg: Double = 0;
-        avg = tuple._2._1.toDouble / tuple._2._2.toDouble;
-        f"${tuple._1},${avg}%1.2f"
+        // var avg: Double = 0;
+        // avg = tuple._2._1.toDouble / tuple._2._2.toDouble;
+        // f"${tuple._1},${avg}%1.2f"
+        
+        f"${tuple._1},${tuple._2._2}"
       }
     );
     
-    output.saveAsTextFile(args(1))
+    output.coalesce(1).saveAsTextFile(args(1))
   }
 }
