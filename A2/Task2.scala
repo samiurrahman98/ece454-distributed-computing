@@ -1,5 +1,4 @@
 import org.apache.spark.{SparkContext, SparkConf}
-import scala.collection.mutable.{ListBuffer}
 
 // please don't change the object name
 object Task2 {
