@@ -78,7 +78,7 @@ public class Task4 {
 
   public static void main(String[] args) throws Exception {
     Configuration conf = new Configuration();
-    conf.set("mapred.textoutputformat.separator", ",");
+    conf.set("mapreduce.output.textoutputformat.separator", ",");
 
     String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
 
