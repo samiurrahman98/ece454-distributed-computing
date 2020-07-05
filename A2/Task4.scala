@@ -3,18 +3,6 @@ import scala.collection.Map
 import org.apache.spark.rdd.RDD
 
 object Task4 {
-  // def findSimilarity(ratings1: Array[Byte], ratings2: Array[Byte]): Int = {
-  //   var similarity = 0
-
-  //   for(i <- 0 until ratings1.length){
-  //     if (ratings1(i) == ratings2(i) && ratings1(i) != 0) {
-  //       similarity += 1
-  //     }
-  //   }
-
-  //   return similarity
-  // } 
-
   def buildMovieRatingsMap(movieRatings: RDD[String]): Map[String, Array[Byte]] = {
     movieRatings.map(movieRating => {
       val tokens = movieRating.split(",", -1)
