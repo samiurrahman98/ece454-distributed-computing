@@ -36,8 +36,9 @@ public class Task4 {
         String title = tokens[0];
         Byte[] ratings = new Byte[tokens.length - 1];
 
-        for (int i = 0; i < ratings.length; i++)
+        for (int i = 0; i < ratings.length; i++) {
           ratings[i] = tokens[i + 1].isEmpty() ? 0 : Byte.parseByte(tokens[i + 1]);
+        }
 
         movieRatingsMap.put(title, ratings);
       }
@@ -62,7 +63,9 @@ public class Task4 {
       int similarity = 0;
 
       for (int i = 0; i < Math.min(ratings1.length, ratings2.length); i++) {
-        if (ratings1[i] == ratings2[i] && ratings1[i] != 0) similarity++;
+        if (ratings1[i] == ratings2[i] && ratings1[i] != 0) {
+          similarity++;
+        }
       }
 
       return similarity;
