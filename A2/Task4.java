@@ -37,7 +37,7 @@ public class Task4 {
         Byte[] ratings = new Byte[tokens.length - 1];
 
         for (int i = 0; i < ratings.length; i++)
-          ratings[i] = !tokens[i + 1].isEmpty() ? Byte.parseByte(tokens[i + 1]) : 0;
+          ratings[i] = tokens[i + 1].isEmpty() ? 0 : Byte.parseByte(tokens[i + 1]);
 
         movieRatingsMap.put(title, ratings);
       }

@@ -1,22 +1,21 @@
 import org.apache.spark.{SparkContext, SparkConf}
-import scala.math.min
 import scala.collection.Map
 import org.apache.spark.rdd.RDD
 
 object Task4 {
-  def getSimilarity(ratings1: Array[Byte], ratings2: Array[Byte]): Int = {
-    var similarity = 0
+  // def findSimilarity(ratings1: Array[Byte], ratings2: Array[Byte]): Int = {
+  //   var similarity = 0
 
-    for(i <- 0 until ratings1.length){
-      if (ratings1(i) == ratings2(i) && ratings1(i) != 0) {
-        similarity += 1
-      }
-    }
+  //   for(i <- 0 until ratings1.length){
+  //     if (ratings1(i) == ratings2(i) && ratings1(i) != 0) {
+  //       similarity += 1
+  //     }
+  //   }
 
-    return similarity
-  } 
+  //   return similarity
+  // } 
 
-  def buildMovieRatingsByteMap(movieRatings: RDD[String]): Map[String, Array[Byte]] = {
+  def buildMovieRatingsMap(movieRatings: RDD[String]): Map[String, Array[Byte]] = {
     movieRatings.map(movieRating => {
       val tokens = movieRating.split(",", -1)
       val title = tokens(0)
@@ -37,7 +36,7 @@ object Task4 {
 
     val textFile = sc.textFile(args(0))
 
-    val movieRatingsMap = sc.broadcast(buildMovieRatingsByteMap(textFile))
+    val movieRatingsMap = sc.broadcast(buildMovieRatingsMap(textFile))
 
     val output = textFile.flatMap(movie1 => {
       val title1 = movie1.split(",", 2)(0)
@@ -49,11 +48,16 @@ object Task4 {
           val title2 = movie2._1
           val ratings2 = movie2._2
 
-          val similarity = getSimilarity(ratings1, ratings2)
+          val similarity = 0
+          for(i <- 0 until ratings1.length) {
+            if (ratings1(i) == ratings2(i) && ratings1(i) != 0)
+              similarity += 1
+          }
+
           (title1 + "," + title2 + "," + similarity)
         })
     })
     
-    output.saveAsTextFile(args(1))
+    sc.parallelize(Seq(output)).coalesce(1).saveAsTextFile(args(1))
   }
 }
