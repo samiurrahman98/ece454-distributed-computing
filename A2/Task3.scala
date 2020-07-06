@@ -3,22 +3,6 @@ import scala.collection.mutable.ArrayBuffer
 
 // please don't change the object name
 object Task3 {
-  def userIdToRatingCount(line: String): ArrayBuffer[(Int, Int)] = {
-      val ratings = line.split(",", -1)
-      var userRatingCount = ArrayBuffer[(Int, Int)]()
-
-      for(i <- 1 until ratings.length){
-        if (ratings(i) != "") {
-          val count = (i, 1)
-          userRatingCount += count
-        } else {
-          val count = (i, 0)
-          userRatingCount += count
-        }
-      }
-
-      return userRatingCount
-  }
 
   def main(args: Array[String]) {
     val conf = new SparkConf().setAppName("Task 3")
@@ -33,6 +17,9 @@ object Task3 {
       for (i <- 1 until ratings.length) {
         if (ratings(i) != "") {
           val count = (i, 1)
+          userRatingCount += count
+        } else {
+          val count = (i, 0)
           userRatingCount += count
         }
       }
