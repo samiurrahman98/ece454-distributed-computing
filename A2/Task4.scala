@@ -36,7 +36,7 @@ object Task4 {
           val title2 = movie2._1
           val ratings2 = movie2._2
 
-          val similarity = 0
+          var similarity = 0
           for(i <- 0 until ratings1.length) {
             if (ratings1(i) == ratings2(i) && ratings1(i) != 0)
               similarity += 1
