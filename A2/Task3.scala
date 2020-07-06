@@ -11,6 +11,9 @@ object Task3 {
         if (ratings(i) != "") {
           val count = (i, 1)
           userRatingCount += count
+        } else {
+          val count = (i, 0)
+          userRatingCount += count
         }
       }
 
