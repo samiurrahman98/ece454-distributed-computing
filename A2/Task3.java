@@ -14,6 +14,7 @@ import org.apache.hadoop.util.GenericOptionsParser;
 
 public class Task3 {
   public static class UserRatingMapper extends Mapper<Object, Text, IntWritable, IntWritable> {
+    private final static IntWritable zero = new IntWritable(0);
     private final static IntWritable one = new IntWritable(1);
     private IntWritable userId = new IntWritable();
 
@@ -21,10 +22,11 @@ public class Task3 {
       String[] tokens = value.toString().split(",", -1);
 
       for (int i = 1; i < tokens.length; i++) {
-        if (!tokens[i].isEmpty()) {
-          userId.set(i);
+        userId.set(i);
+        if (!tokens[i].isEmpty())
           context.write(userId, one);
-        }
+        else
+          context.write(userId, zero);
       }
     }
   }
