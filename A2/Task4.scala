@@ -45,7 +45,8 @@ object Task4 {
           (title1 + "," + title2 + "," + similarity)
         })
     })
+    // }).saveAsTextFile(args(1))
     
-    sc.parallelize(Seq(output)).coalesce(1).saveAsTextFile(args(1))
+    sc.parallelize(Seq(output.collect().mkString("\n"))).coalesce(1).saveAsTextFile(args(1))
   }
 }
