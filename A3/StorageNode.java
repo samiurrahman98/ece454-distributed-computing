@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.*;
+import java.net.InetSockerAddress;
 
 import org.apache.thrift.*;
 import org.apache.thrift.server.*;
@@ -19,46 +20,63 @@ public class StorageNode {
     static Logger log;
 
     public static void main(String [] args) throws Exception {
-	BasicConfigurator.configure();
-	log = Logger.getLogger(StorageNode.class.getName());
+		BasicConfigurator.configure();
+		log = Logger.getLogger(StorageNode.class.getName());
 
-	if (args.length != 4) {
-	    System.err.println("Usage: java StorageNode host port zkconnectstring zknode");
-	    System.exit(-1);
-	}
-
-	CuratorFramework curClient =
-	    CuratorFrameworkFactory.builder()
-	    .connectString(args[2])
-	    .retryPolicy(new RetryNTimes(10, 1000))
-	    .connectionTimeoutMs(1000)
-	    .sessionTimeoutMs(10000)
-	    .build();
-
-	curClient.start();
-	Runtime.getRuntime().addShutdownHook(new Thread() {
-		public void run() {
-		    curClient.close();
+		if (args.length != 4) {
+			System.err.println("Usage: java StorageNode host port zkconnectstring zknode");
+			System.exit(-1);
 		}
-	    });
 
-	KeyValueService.Processor<KeyValueService.Iface> processor = new KeyValueService.Processor<>(new KeyValueHandler(args[0], Integer.parseInt(args[1]), curClient, args[3]));
-	TServerSocket socket = new TServerSocket(Integer.parseInt(args[1]));
-	TThreadPoolServer.Args sargs = new TThreadPoolServer.Args(socket);
-	sargs.protocolFactory(new TBinaryProtocol.Factory());
-	sargs.transportFactory(new TFramedTransport.Factory());
-	sargs.processorFactory(new TProcessorFactory(processor));
-	sargs.maxWorkerThreads(64);
-	TServer server = new TThreadPoolServer(sargs);
-	log.info("Launching server");
+		CuratorFramework curClient =
+			CuratorFrameworkFactory.builder()
+			.connectString(args[2])
+			.retryPolicy(new RetryNTimes(10, 1000))
+			.connectionTimeoutMs(1000)
+			.sessionTimeoutMs(10000)
+			.build();
 
-	new Thread(new Runnable() {
-		public void run() {
-		    server.serve();
+		curClient.start();
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			public void run() {
+				curClient.close();
+			}
+			});
+
+		KeyValueHandler kvHandler = new KeyValueHandler(args[0], Integer.parseInt(args[1]), curClient, args[3]);
+		KeyValueService.Processor<KeyValueService.Iface> processor = new KeyValueService.Processor<>(new KeyValueHandler(args[0], Integer.parseInt(args[1]), curClient, args[3]));
+		TServerSocket socket = new TServerSocket(Integer.parseInt(args[1]));
+		TThreadPoolServer.Args sargs = new TThreadPoolServer.Args(socket);
+		sargs.protocolFactory(new TBinaryProtocol.Factory());
+		sargs.transportFactory(new TFramedTransport.Factory());
+		sargs.processorFactory(new TProcessorFactory(processor));
+		sargs.maxWorkerThreads(64);
+		TServer server = new TThreadPoolServer(sargs);
+		log.info("Launching server");
+
+		new Thread(new Runnable() {
+			public void run() {
+				server.serve();
+			}
+			}).start();
+
+		// TODO: create an ephemeral node in ZooKeeper
+		
+		String connectionString = args[0] + ": " + String.valueOf(args[1]);
+		curClient.create().withMode(CreateMode.EPHEMERAL_SEQUENTIAL).forPath(args[3] + "/", connectionString.getBytres());
+
+		NodeWatcher nodeWatcher = new NodeWatcher(curClient, kvHandler, args[3]);
+		List<String> children = curClient.getChildren().usingWatcher(nodeWatcher).forPath(args[3]);
+
+		nodeWatcher.classifyNode(children.size());
+
+		if (children.size() > 0) {
+			InetSocketAddress address = ClientUtils.extractSiblingInfo(children, kvHandler.getZkNode(), kvHandler.getRole(), curClient);
+			int cap = kvHandler.getRole().equals(KeyValueHandler.ROLE.BACKUP) ? ClientUtils.BACKUP_POOL_NUM : ClientUtils.PRIMARY_POOL_NUM;
+			ClientUtils.populateClientObjectPool(address.getHostName(), address.getPort(), cap);
+			kvHandler.setAlone(false);
+		} else {
+			kvHandler.setAlone(true);
 		}
-	    }).start();
-
-	// TODO: create an ephemeral node in ZooKeeper
-	// curClient.create(...)
     }
 }
