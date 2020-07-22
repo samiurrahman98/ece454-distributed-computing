@@ -1,6 +1,5 @@
 import java.io.*;
 import java.util.*;
-import java.net.InetSockerAddress;
 
 import org.apache.thrift.*;
 import org.apache.thrift.server.*;
@@ -60,23 +59,64 @@ public class StorageNode {
 			}
 			}).start();
 
-		// TODO: create an ephemeral node in ZooKeeper
-		
-		String connectionString = args[0] + ": " + String.valueOf(args[1]);
-		curClient.create().withMode(CreateMode.EPHEMERAL_SEQUENTIAL).forPath(args[3] + "/", connectionString.getBytres());
+		new Thread(new Runnable() {
+			public void run() {
+				String zkNode = args[3];
 
-		NodeWatcher nodeWatcher = new NodeWatcher(curClient, kvHandler, args[3]);
-		List<String> children = curClient.getChildren().usingWatcher(nodeWatcher).forPath(args[3]);
+				try {
+					List<String> children = new ArrayList<String>();
+					while (children.size() == 0) {
+						curClient.sync();
+						children = curClient.getChildren().forPath(zkNode);
+					}
 
-		nodeWatcher.classifyNode(children.size());
+					if (children.size() == 1)
+						return;
 
-		if (children.size() > 0) {
-			InetSocketAddress address = ClientUtils.extractSiblingInfo(children, kvHandler.getZkNode(), kvHandler.getRole(), curClient);
-			int cap = kvHandler.getRole().equals(KeyValueHandler.ROLE.BACKUP) ? ClientUtils.BACKUP_POOL_NUM : ClientUtils.PRIMARY_POOL_NUM;
-			ClientUtils.populateClientObjectPool(address.getHostName(), address.getPort(), cap);
-			kvHandler.setAlone(false);
-		} else {
-			kvHandler.setAlone(true);
-		}
+					Collections.sort(children);
+					byte[] backupData = curClient.getData().forPath(zkNode + "/" + children.get(children.size() - 1));
+					String strBackupData = new String(backupData);
+					String[] backup = strBackupData.split(":");
+					String backupHost = backup[0];
+					int backupPort = Integer.parseInt(backup[1]);
+
+					byte[] primaryData = curClient.getData().forPath(zkNode + "/" + children.get(children.size() - 2));
+					String strPrimaryData = new String(primaryData);
+					String[] primary = strPrimaryData.split(":");
+					String primaryHost = primary[0];
+					int primaryPort = Integer.parseInt(primary[1]);
+
+					TSocket sock = new TSocket(primaryHost, primaryPort);
+					TTransport transport = new TFramedTransport(sock);
+					transport.open();
+					TProtocol protocol = new TBinaryProtocol(transport);
+					KeyValueService.Client primaryClient = new KeyValueService.Client(protocol);
+
+					while (true) {
+						try {
+							Thread.sleep(50);
+							primaryClient.setPrimary(true);
+							continue;
+						} catch (Exception e) {
+							System.out.println("Backup lost connection to primary");
+							break;
+						}
+					}
+					
+					curClient.delete().forPath(zkNode + "/" + children.get(children.size() - 2));
+
+					sock = new TSocket(backupHost, backupPort);
+					transport = new TFramedTransport(sock);
+					transport.open();
+					protocol = new TBinaryProtocol(transport);
+					KeyValueService.Client backupClient = new KeyValueService.Client(protocol);
+
+					backupClient.setPrimary(true);
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			};
+		}).start();
     }
 }
