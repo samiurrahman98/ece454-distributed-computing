@@ -36,13 +36,8 @@ public class StorageNode {
 			.build();
 
 		curClient.start();
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			public void run() {
-				curClient.close();
-			}
-			});
-
-		KeyValueHandler kvHandler = new KeyValueHandler(args[0], Integer.parseInt(args[1]), curClient, args[3]);
+		curClient.create().withMode(CreateMode.EPHEMERAL_SEQUENTIAL).forPath(args[3] + "/ChildNode", (args[0] + ":" + args[1]).getBytes());
+		
 		KeyValueService.Processor<KeyValueService.Iface> processor = new KeyValueService.Processor<>(new KeyValueHandler(args[0], Integer.parseInt(args[1]), curClient, args[3]));
 		TServerSocket socket = new TServerSocket(Integer.parseInt(args[1]));
 		TThreadPoolServer.Args sargs = new TThreadPoolServer.Args(socket);

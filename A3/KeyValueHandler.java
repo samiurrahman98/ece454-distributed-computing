@@ -17,7 +17,11 @@ import org.apache.curator.retry.*;
 import org.apache.curator.framework.*;
 import org.apache.curator.framework.api.*;
 
-public class KeyValueHandler implements KeyValueService.Iface {
+import com.google.common.util.concurrent.Striped;
+
+import org.apache.log4j.*;
+
+public class KeyValueHandler implements KeyValueService.Iface, CuratorWatcher {
     private Map<String, String> myMap;
     private CuratorFramework curClient;
     private String zkNode;
@@ -26,12 +30,12 @@ public class KeyValueHandler implements KeyValueService.Iface {
 
     private static Logger log;
     private volatile Boolean isPrimary = false;
-    private Reentrant Lock globalLock = new ReentrantLock();
+    private ReentrantLock globalLock = new ReentrantLock();
     private Striped<Lock> stripedLock = Striped.lock(64);
     private volatile ConcurrentLinkedQueue<KeyValueService.Client> backupClients = null;
     private int clientNumber = 32;
 
-    public KeyValueHandler(String host, int port, CuratorFramework curClient, String zkNode) {
+    public KeyValueHandler(String host, int port, CuratorFramework curClient, String zkNode) throws Exception {
         this.host = host;
         this.port = port;
         this.curClient = curClient;
@@ -92,7 +96,7 @@ public class KeyValueHandler implements KeyValueService.Iface {
         try {
             myMap.put(key, value);
 
-            if (this.backupClients != null {
+            if (this.backupClients != null) {
                 KeyValueService.Client currentBackupClient = null;
 
                 while (currentBackupClient == null)
@@ -104,6 +108,19 @@ public class KeyValueHandler implements KeyValueService.Iface {
         } catch (Exception e) {
             e.printStackTrace();
             this.backupClients = null;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void putBackup(String key, String value) throws org.apache.thrift.TException {
+        Lock lock = stripedLock.get(key);
+        lock.lock();
+
+        try {
+            myMap.put(key, value);
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             lock.unlock();
         }
@@ -151,7 +168,7 @@ public class KeyValueHandler implements KeyValueService.Iface {
 
                 firstBackupClient.copyData(this.myMap);
 
-                this.backupClient = new ConcurrentLinkedQueue<KeyValueService.Client>();
+                this.backupClients = new ConcurrentLinkedQueue<KeyValueService.Client>();
 
                 for (int i = 0; i < clientNumber; i++) {
                     TSocket sock = new TSocket(backupHost, backupPort);
