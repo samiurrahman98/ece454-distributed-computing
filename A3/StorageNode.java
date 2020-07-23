@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.*;
 import java.util.List;
+
 import java.net.InetSocketAddress;
 
 import org.apache.thrift.*;
@@ -22,8 +23,6 @@ public class StorageNode {
 
     public static void main(String [] args) throws Exception {
 		BasicConfigurator.configure();
-
-
 		log = Logger.getLogger(StorageNode.class.getName());
 
 		if (args.length != 4) {
@@ -45,8 +44,10 @@ public class StorageNode {
 				curClient.close();
 			}
 		});
-        KeyValueHandler kvHandler = new KeyValueHandler(args[0], Integer.parseInt(args[1]), curClient, args[3]);
-		KeyValueService.Processor<KeyValueService.Iface> processor = new KeyValueService.Processor<>(kvHandler);
+
+        KeyValueHandler keyValueHandler = new KeyValueHandler(args[0], Integer.parseInt(args[1]), curClient, args[3]);
+		KeyValueService.Processor<KeyValueService.Iface> processor = new KeyValueService.Processor<>(keyValueHandler);
+		
 		TServerSocket socket = new TServerSocket(Integer.parseInt(args[1]));
 		TThreadPoolServer.Args sargs = new TThreadPoolServer.Args(socket);
 		sargs.protocolFactory(new TBinaryProtocol.Factory());
@@ -64,31 +65,19 @@ public class StorageNode {
 
 		// create an ephemeral node in ZooKeeper
         String fullConnectionString = args[0] + ":" + String.valueOf(args[1]);
-        //TODO use args instead of hardcode
         curClient.create().withMode(CreateMode.EPHEMERAL_SEQUENTIAL).forPath(args[3] + "/", fullConnectionString.getBytes());
-
-        // set up watcher on the children
-        NodeWatcher nodeWatcher = new NodeWatcher(curClient, kvHandler, args[3]);
+        NodeWatcher nodeWatcher = new NodeWatcher(curClient, keyValueHandler, args[3]);
         List<String> children = curClient.getChildren().usingWatcher(nodeWatcher).forPath(args[3]);
 
-        // Classify Node as when as soon it comes up
         nodeWatcher.classifyNode(children.size());
 
         if (children.size() > 1) {
-            System.out.println("size greater than 1 and role: " + kvHandler.getRole());
-            InetSocketAddress address = ClientUtility.extractSiblingInfo(children, kvHandler.getZkNode(), kvHandler.getRole(), curClient);
-            int cap = kvHandler.getRole().equals(KeyValueHandler.ROLE.BACKUP) ? ClientUtility.BACKUP_POOL_NUM : ClientUtility.PRIMARY_POOL_NUM;
-            ClientUtility.populateClientObjectPool(address.getHostName(), address.getPort(), cap);
-            kvHandler.setAlone(false);
-
-//            if (kvHandler.getRole().equals(KeyValueHandler.ROLE.BACKUP)) {
-//                kvHandler.fetchDataDump();
-//            }
-//            if (kvHandler.getRole().equals(KeyValueHandler.ROLE.PRIMARY)) {
-//                kvHandler.transferMap();
-//            }
+            InetSocketAddress address = ClientUtils.extractSiblingDetails(children, keyValueHandler.getZkNode(), keyValueHandler.getRole(), curClient);
+            int cap = keyValueHandler.getRole().equals(KeyValueHandler.ROLE.BACKUP) ? ClientUtils.BACKUP_POOL_NUM : ClientUtils.PRIMARY_POOL_NUM;
+            ClientUtils.populateClientObjectPool(address.getHostName(), address.getPort(), cap);
+            keyValueHandler.setAlone(false);
         } else {
-            kvHandler.setAlone(true);
+            keyValueHandler.setAlone(true);
         }
     }
 }
