@@ -1,5 +1,7 @@
 import java.io.*;
 import java.util.*;
+import java.util.List;
+import java.net.InetSocketAddress;
 
 import org.apache.thrift.*;
 import org.apache.thrift.server.*;
@@ -20,6 +22,8 @@ public class StorageNode {
 
     public static void main(String [] args) throws Exception {
 		BasicConfigurator.configure();
+
+
 		log = Logger.getLogger(StorageNode.class.getName());
 
 		if (args.length != 4) {
@@ -31,14 +35,18 @@ public class StorageNode {
 			CuratorFrameworkFactory.builder()
 			.connectString(args[2])
 			.retryPolicy(new RetryNTimes(10, 1000))
-			.connectionTimeoutMs(1000)
+			.connectionTimeoutMs(5000)
 			.sessionTimeoutMs(10000)
 			.build();
 
 		curClient.start();
-		curClient.create().withMode(CreateMode.EPHEMERAL_SEQUENTIAL).forPath(args[3] + "/ChildNode", (args[0] + ":" + args[1]).getBytes());
-		
-		KeyValueService.Processor<KeyValueService.Iface> processor = new KeyValueService.Processor<>(new KeyValueHandler(args[0], Integer.parseInt(args[1]), curClient, args[3]));
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			public void run() {
+				curClient.close();
+			}
+		});
+        KeyValueHandler kvHandler = new KeyValueHandler(args[0], Integer.parseInt(args[1]), curClient, args[3]);
+		KeyValueService.Processor<KeyValueService.Iface> processor = new KeyValueService.Processor<>(kvHandler);
 		TServerSocket socket = new TServerSocket(Integer.parseInt(args[1]));
 		TThreadPoolServer.Args sargs = new TThreadPoolServer.Args(socket);
 		sargs.protocolFactory(new TBinaryProtocol.Factory());
@@ -52,66 +60,35 @@ public class StorageNode {
 			public void run() {
 				server.serve();
 			}
-			}).start();
-
-		new Thread(new Runnable() {
-			public void run() {
-				String zkNode = args[3];
-
-				try {
-					List<String> children = new ArrayList<String>();
-					while (children.size() == 0) {
-						curClient.sync();
-						children = curClient.getChildren().forPath(zkNode);
-					}
-
-					if (children.size() == 1)
-						return;
-
-					Collections.sort(children);
-					byte[] backupData = curClient.getData().forPath(zkNode + "/" + children.get(children.size() - 1));
-					String strBackupData = new String(backupData);
-					String[] backup = strBackupData.split(":");
-					String backupHost = backup[0];
-					int backupPort = Integer.parseInt(backup[1]);
-
-					byte[] primaryData = curClient.getData().forPath(zkNode + "/" + children.get(children.size() - 2));
-					String strPrimaryData = new String(primaryData);
-					String[] primary = strPrimaryData.split(":");
-					String primaryHost = primary[0];
-					int primaryPort = Integer.parseInt(primary[1]);
-
-					TSocket sock = new TSocket(primaryHost, primaryPort);
-					TTransport transport = new TFramedTransport(sock);
-					transport.open();
-					TProtocol protocol = new TBinaryProtocol(transport);
-					KeyValueService.Client primaryClient = new KeyValueService.Client(protocol);
-
-					while (true) {
-						try {
-							Thread.sleep(50);
-							primaryClient.setPrimary(true);
-							continue;
-						} catch (Exception e) {
-							System.out.println("Backup lost connection to primary");
-							break;
-						}
-					}
-					
-					curClient.delete().forPath(zkNode + "/" + children.get(children.size() - 2));
-
-					sock = new TSocket(backupHost, backupPort);
-					transport = new TFramedTransport(sock);
-					transport.open();
-					protocol = new TBinaryProtocol(transport);
-					KeyValueService.Client backupClient = new KeyValueService.Client(protocol);
-
-					backupClient.setPrimary(true);
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			};
 		}).start();
+
+		// create an ephemeral node in ZooKeeper
+        String fullConnectionString = args[0] + ":" + String.valueOf(args[1]);
+        //TODO use args instead of hardcode
+        curClient.create().withMode(CreateMode.EPHEMERAL_SEQUENTIAL).forPath(args[3] + "/", fullConnectionString.getBytes());
+
+        // set up watcher on the children
+        NodeWatcher nodeWatcher = new NodeWatcher(curClient, kvHandler, args[3]);
+        List<String> children = curClient.getChildren().usingWatcher(nodeWatcher).forPath(args[3]);
+
+        // Classify Node as when as soon it comes up
+        nodeWatcher.classifyNode(children.size());
+
+        if (children.size() > 1) {
+            System.out.println("size greater than 1 and role: " + kvHandler.getRole());
+            InetSocketAddress address = ClientUtility.extractSiblingInfo(children, kvHandler.getZkNode(), kvHandler.getRole(), curClient);
+            int cap = kvHandler.getRole().equals(KeyValueHandler.ROLE.BACKUP) ? ClientUtility.BACKUP_POOL_NUM : ClientUtility.PRIMARY_POOL_NUM;
+            ClientUtility.populateClientObjectPool(address.getHostName(), address.getPort(), cap);
+            kvHandler.setAlone(false);
+
+//            if (kvHandler.getRole().equals(KeyValueHandler.ROLE.BACKUP)) {
+//                kvHandler.fetchDataDump();
+//            }
+//            if (kvHandler.getRole().equals(KeyValueHandler.ROLE.PRIMARY)) {
+//                kvHandler.transferMap();
+//            }
+        } else {
+            kvHandler.setAlone(true);
+        }
     }
 }
