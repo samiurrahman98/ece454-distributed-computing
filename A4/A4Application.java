@@ -64,8 +64,8 @@ public class A4Application {
 													   .groupByKey()
 													   .aggregate(() -> null, (key, newValue, oldValue) -> {
 														   int occupancy = Integer.parseInt(newValue.split(",")[0]);
-														   int capacity = Integer.parseInt(newValue.split(",")[1]);
-
+														   int capacity = newValue.split(",").length == 2 ? Integer.parseInt(newValue.split(",")[1]) : Integer.MAX_VALUE;
+														  
 														   if (occupancy > capacity) {
 															   return String.valueOf(occupancy);
 														   } else {
